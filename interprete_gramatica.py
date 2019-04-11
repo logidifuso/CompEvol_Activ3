@@ -73,26 +73,39 @@ class Gramatica(object):
         wraps = 0
         salida = []
         opciones_de_produccion = []
-        print(self.reglas)
+        #print(self.reglas)
 
         simbolos_no_asignados = [self.regla_inicio]
         while (wraps < max_wraps) and (len(simbolos_no_asignados) > 0):
             # Wrap: La siguiente condición comprueba si se vuelven a reutilizar codones
-            if codones_usados % len(_input) == 0 and codones_usados > 0 and len(opciones_de_produccion) > 1:
-                wraps += 1
+            if codones_usados == 15:
+                print("cuidao!")
+ #           if codones_usados % len(_input) == 0 and codones_usados > 0 and len(opciones_de_produccion) > 1:
+ #               wraps += 1
             # Asignar una producción (obtener el valor de un símbolo)
             simbolo_actual = simbolos_no_asignados.pop(0)
             # Si no es un no-terminal se fija el valor correspondiente
+            #if simbolos_no_asignados[0][1] != self.NT:
+             #   print(simbolos_no_asignados)
+              #  while simbolos_no_asignados[0][1] != self.NT:
+               #     simbolo_actual = simbolos_no_asignados.pop(0)
+                #    salida.append(simbolo_actual[0])
+
             if simbolo_actual[1] != self.NT:
+                #while  simbolo_actual[1] != self.NT:
                 salida.append(simbolo_actual[0])
+              #      simbolo_actual = simbolos_no_asignados.pop(0)
             # Si pertenece al conjunto no-terminal hay que escoger la opción de producción
             else:
+                #simbolo_actual = simbolos_no_asignados.pop(0)
                 opciones_de_produccion = self.reglas[simbolo_actual[0]]
                 # Seleccionar una opción de producción
                 produccion_actual = _input[codones_usados % len(_input)] % len(opciones_de_produccion)
                 # Y se usa el codón si había más de una opción para escoger
                 if len(opciones_de_produccion) > 1:
                     codones_usados += 1
+                if codones_usados % len(_input) == 0 and codones_usados > 0 and len(opciones_de_produccion) > 1:
+                    wraps += 1
                 # Derviation order is left to right(depth-first)
                 simbolos_no_asignados = opciones_de_produccion[produccion_actual] + simbolos_no_asignados
 

@@ -14,7 +14,8 @@ CROSSOVER_PROBABILITY = 0.7
 # GRAMMAR_FILE, FITNESS_FUNCTION = "grammars/arithmetic.pybnf", MaxFitness()
 # GRAMMAR_FILE, FITNESS_FUNCTION = "grammars/boolean.pybnf", XORFitness()
 
-GRAMMAR_FILE = ramatica_nucleos.bnf
+GRAMMAR_FILE = 'gramatica_nucleos.bnf'
+
 
 def mane():
     """ Run program """

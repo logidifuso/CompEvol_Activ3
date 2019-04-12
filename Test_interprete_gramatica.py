@@ -1,5 +1,4 @@
 import interprete_gramatica
-import math
 import numpy as np
 
 
@@ -11,10 +10,7 @@ GENERATION_SIZE = 100
 GENERATIONS = 30
 MUTATION_PROBABILITY = 0.01
 CROSSOVER_PROBABILITY = 0.7
-# GRAMMAR_FILE, FITNESS_FUNCTION = "grammars/hofBoolean.pybnf", EvenNParityFitness(3)
-# GRAMMAR_FILE, FITNESS_FUNCTION = "grammars/letter.bnf", StringMatch("golden")
-# GRAMMAR_FILE, FITNESS_FUNCTION = "grammars/arithmetic.pybnf", MaxFitness()
-# GRAMMAR_FILE, FITNESS_FUNCTION = "grammars/boolean.pybnf", XORFitness()
+
 
 GRAMMAR_FILE = 'gramatica_nucleos.bnf'
 
@@ -29,69 +25,25 @@ genoma_prueba = [1, 0, 1, 2, 1, 3, 5, 6, 1, 9, 8, 9, 0, 3, 0, 3, \
                  6, 6, 0, 2, 3, 3, 1, 8, 2, 2, 0, 9, 1]
 fenotipo, codones_usados = bnf_grammar.generate(genoma_prueba)
 
-# individuals = initialise_population(POPULATION_SIZE)
-# Loop
-# best_ever = search_loop(GENERATIONS, individuals, bnf_grammar,
-#                         generational_replacement, tournament_selection,
-#                        FITNESS_FUNCTION)
-# print("Best " + str(best_ever))
-print('ein?')
-print(codones_usados)
-print(fenotipo)
 
-#mate = math.exp(1)
-#print(mate)
-"""
-funcion_testeo = '''
-import math
-def f(x):
-    return 2.0e+2*math.exp(1.0e+1*(1.0e+0 - x)**2)'''
+print("El número de codones usados ha sido: ", codones_usados)
+print("El fenotipo que ha quedado tras decodificar es:\n", fenotipo)
 
-scope = {}
-exec(funcion_testeo, scope)
-resultado = scope['f'](0)
-print(resultado)
-"""
-
-funcion_testeo = '''
-def f(x):
-    return 1.0e+1*math.exp(1.0e+1*(1.0e+0 - x)**2)'''
-
-
-exec(funcion_testeo, globals())
-resultado = f(0)
-print(resultado)
-
-funcion_testeo = '''
-def f(x):
-    return 1.0e+2*math.exp(1.0e+1*(1.0e+0 - x)**2)'''
-
-exec(funcion_testeo, globals())
-resultado = f(0)
-print(resultado)
+exec(fenotipo, globals())
+# Rango de x a evaluar (vectorización de la evaluación de los puntos)
+x = np.arange(-1, 1, 0.5)
+print("Puntos de evaluación:", x)
+evaluacion = f(x)
+print("El resultado de la evaluación ha sido:\n", evaluacion)
 
 
 
+def testecillo(x):
+    return +2.2e-3*np.exp(-6.6e-9*(9.9e+3 - x)**2)\
+           -4.3e+5*((9.8e+1*x + 8.7e+2)**4)\
+           +7.6e+2*np.tanh(4.3e-8*x + 3.2e+9)
 
-
-
-x = np.arange(4)
-
-def funcion(y):
-    return y**2+np.exp(x)
-
-h = funcion(x)
-print(h)
-
-
-
-resultado2 = f(x)
-print("El resultado 2 es:", resultado2)
-
-a='''
-def x():
-  print(42)
-'''
-scope = {}
-exec(a, scope)
-scope['x']()
+punto = 0
+resul = testecillo(0)
+print("Comprobación de que la evaluación es correcta.\nLa evaluación en el punto {0} es: {1}"
+      .format(str(punto), str(resul)))

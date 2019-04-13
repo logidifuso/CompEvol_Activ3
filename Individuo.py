@@ -1,5 +1,5 @@
 import random
-
+import numpy as np
 
 class Individuo(object):
 
@@ -65,17 +65,17 @@ class Individuo(object):
 # ----------------------------------------------------------------------------
 
 # ************************* MUTACIONES ***************************************
-    def muta_en_kernel(self, p_mut, long_kernel):
+    def muta_en_kernel(self, p_mut, codones_por_kernel):
         """
         Muta el genoma de un individuo escogiendo aleatoriamente un valor
         entero con probabilidad p_mut en cada uno de los kernels, pero SIN
         MODIFICAR EL TIPO DE KERNEL.
         Sólo se consideran los codones usados
         :param p_mut: probabilidad de mutación
-        :param long_kernel: número de codones usados por kernel (15 en este caso)
+        :param codones_por_kernel: número de codones usados por kernel (15 en este caso)
         """
         for i in range(0, self.codones_usados):
-            while i % long_kernel != 0:
+            while i % codones_por_kernel != 0:
                 if random.random() < p_mut:
                     self.genotipo[i] = random.randint(0, Individuo.MAX_VAL_CODON)
 
@@ -91,7 +91,37 @@ class Individuo(object):
             pos = random.randint(0, self.codones_usados)
             self.genotipo[pos] = random.randint(0, Individuo.MAX_VAL_CODON)
 
-    def muta_en_kernel
+# ************************** RECOMBINACIÓN **********************************
+    def crossover_1pt_fijo(padres, codones_por_kernel):
+        """
+        Crossover de 1punto fijo. Produce 2 hijos usando recombinación de punto
+        fijo. Uno de los hijos tendrá la misma longitud que uno de los padres y
+        el otro hijo tendrá la misma longitud que el otro padre.
+        El punto de crossover se encuentra dentro de la porción de genoma usado
+        por los 2 padres.
+        !!!!!!!!!!:param other:
+        !!!!!!!!!!!:return:
+        """
+        punto_crossover_max = min(padres[0].codones_usados, padres[1].codones_usados)
+        punto_crossover = random.randint(1, punto_crossover_max)
+
+        h1 = np.array([])
+        h2 = np.array([])
+
+        h1 = np.append(h1, padres[0].genotipo[0:punto_crossover])
+        h1 = np.append(h1, padres[1].genotipo[punto_crossover:])
+
+        h2 = np.append(h1, padres[1].genotipo[0:punto_crossover])
+        h2 = np.append(h1, padres[0].genotipo[punto_crossover:])
+
+        hijo1 = Individuo(h1)
+        hijo2 = Individuo(h2)
+
+        return (hijo1, hijo2)
+
+
+
+
 
 
 

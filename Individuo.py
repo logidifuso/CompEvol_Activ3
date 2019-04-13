@@ -1,6 +1,7 @@
 import random
 import numpy as np
 
+
 class Individuo(object):
 
     MAX_VAL_CODON = 256
@@ -25,15 +26,18 @@ class Individuo(object):
         return self.fitness < other.fitness
 
     def __str__(self):
-        print("Individuo ID: ", self.id)
-        print("Genotipo:", self.genotipo)
-        print("Fenotipo Compilado?:", self.fenotipo_compilado)
-        print("Fenotipo:\n{1}".format(self.fenotipo). format(self.fenotipo))
-        print("Valor de fitness: ", self.fitness)
-        print("Número de codones usados:", self.codones_usados)
+        return ("Individuo ID: {0}\nGenotipo: {1}\nFenotipo Compilado: {2}\n"
+                "Fenotipo:\n{3}\nValor de fitness: {4}\n"
+                "Número de codones usados: {5}".format(self.id,
+                                                       self.genotipo,
+                                                       self.fenotipo_compilado,
+                                                       self.fenotipo,
+                                                       self.fitness,
+                                                       self.codones_usados))
 
 
 # ***********************   MÉTODOS GETTERS ***************************
+
     def get_genotipo(self):
         return self.genotipo
 
@@ -47,6 +51,7 @@ class Individuo(object):
         return self.fenotipo
 
 # **********************   MÉTODOS SETTERS *****************************
+
     def set_genotipo(self, genotipo):
         self.genotipo = genotipo
 
@@ -75,16 +80,15 @@ class Individuo(object):
         :param codones_por_kernel: número de codones usados por kernel (15 en este caso)
         """
         for i in range(0, self.codones_usados):
-            while i % codones_por_kernel != 0:
+            if i % codones_por_kernel != 0:
                 if random.random() < p_mut:
                     self.genotipo[i] = random.randint(0, Individuo.MAX_VAL_CODON)
 
-    def muta_n_veces_por_indiv(self, p_mut, num_mutaciones):
+    def muta_n_veces_por_indiv(self, num_mutaciones):
         """
         Muta aleatoriamente el genoma de un individuo un número de veces dado por
         n_mutaciones. Las posiciones de los codones mutados son aleatorias. Sólo
         se consideran los codones usados para obtener el fenotipo.
-        :param p_mut: pr
         :param num_mutaciones: número de mutaciones a realizar en el individuo
         """
         for _ in range(num_mutaciones):
@@ -92,7 +96,7 @@ class Individuo(object):
             self.genotipo[pos] = random.randint(0, Individuo.MAX_VAL_CODON)
 
 # ************************** RECOMBINACIÓN **********************************
-    def crossover_1pt_fijo(padres, codones_por_kernel):
+    def crossover_1pt_fijo(padres, codones_por_kernel=15):
         """
         Crossover de 1punto fijo. Produce 2 hijos usando recombinación de punto
         fijo. Uno de los hijos tendrá la misma longitud que uno de los padres y
@@ -103,7 +107,8 @@ class Individuo(object):
         !!!!!!!!!!!:return:
         """
         punto_crossover_max = min(padres[0].codones_usados, padres[1].codones_usados)
-        punto_crossover = random.randint(1, punto_crossover_max)
+        punto_crossover = random.randint(1, punto_crossover_max/codones_por_kernel)
+        punto_crossover *= codones_por_kernel
 
         h1 = np.array([])
         h2 = np.array([])
@@ -114,14 +119,83 @@ class Individuo(object):
         h2 = np.append(h1, padres[1].genotipo[0:punto_crossover])
         h2 = np.append(h1, padres[0].genotipo[punto_crossover:])
 
+        hijo1 = Individuo(h1.astype(int))
+        hijo2 = Individuo(h2.astype(int))
+
+        return (hijo1, hijo2)
+
+    def crossover_2pt_fijo(padres, codones_por_kernel):
+        """
+        Crossover de 2 puntos fijos. Uno de los hijos tendrá la misma longitud
+        que uno de los padres y el otro hijo tendrá la misma longitud que el
+        otro padre. Los 2 puntos de crossover se encuentra dentro de la porción
+        de genoma usado por los 2 padres.
+        :param codones_por_kernel:
+        :return:
+        """
+
+        punto_crossover_max = min(padres[0].codones_usados, padres[1].codones_usados)
+        punto1_crossover = random.randint(1, punto_crossover_max/codones_por_kernel)
+        punto2_crossover = random.randint(1, punto_crossover_max/codones_por_kernel)
+
+
+        while punto1_crossover == punto2_crossover:
+            punto2_crossover = random.randint(1, punto_crossover_max/codones_por_kernel)
+        if punto2_crossover < punto1_crossover:
+            aux = punto1_crossover
+            punto1_crossover = punto2_crossover
+            punto2_crossover = aux
+
+        punto1_crossover *= codones_por_kernel
+        punto2_crossover *= codones_por_kernel
+
+        h1 = np.array([])
+        h2 = np.array([])
+
+        h1 = np.append(h1, padres[0].genotipo[0:punto1_crossover])
+        h1 = np.append(h1, padres[1].genotipo[punto1_crossover:punto2_crossover])
+        h1 = np.append(h1, padres[0].genotipo[punto2_crossover:])
+
+        h2 = np.append(h2, padres[1].genotipo[0:punto1_crossover])
+        h2 = np.append(h2, padres[0].genotipo[punto1_crossover:punto2_crossover])
+        h2 = np.append(h2, padres[1].genotipo[punto2_crossover:])
+
+        hijo1 = Individuo(h1.astype(int))
+        hijo2 = Individuo(h2.astype(int))
+
+        return (hijo1, hijo2)
+
+    def crossover_1pt_variable(padres, codones_por_kernel):
+        """
+        Crossover de 1 punto. En este caso se utiliza un punto de crossover
+        diferente para cada uno de los padres. Esto permite que los genomas
+        de los hijos sean de longitudes mayores o menores que los de los
+        padres. El punto de crossover para ambos padres se escoje de entre
+        la porción de genoma usado.
+        :param codones_por_kernel:
+        :return:
+        """
+        punto_crossover_max1 = padres[0].codones_usados
+        punto_crossover_max2 = padres[1].codones_usados
+
+        punto1_crossover = codones_por_kernel * \
+                           random.randint(1, punto_crossover_max1/codones_por_kernel)
+        punto2_crossover = codones_por_kernel * \
+                           random.randint(1, punto_crossover_max2/codones_por_kernel)
+
+        h1 = np.array([])
+        h2 = np.array([])
+
+        h1 = np.append(h1, padres[0].genotipo[0:punto1_crossover])
+        h1 = np.append(h1, padres[1].genotipo[punto2_crossover:])
+
+        h2 = np.append(h1, padres[1].genotipo[0:punto2_crossover])
+        h2 = np.append(h1, padres[0].genotipo[punto1_crossover:])
+
         hijo1 = Individuo(h1)
         hijo2 = Individuo(h2)
 
         return (hijo1, hijo2)
-
-
-
-
 
 
 

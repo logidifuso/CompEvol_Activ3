@@ -116,15 +116,15 @@ class Individuo(object):
         h1 = np.append(h1, padres[0].genotipo[0:punto_crossover])
         h1 = np.append(h1, padres[1].genotipo[punto_crossover:])
 
-        h2 = np.append(h1, padres[1].genotipo[0:punto_crossover])
-        h2 = np.append(h1, padres[0].genotipo[punto_crossover:])
+        h2 = np.append(h2, padres[1].genotipo[0:punto_crossover])
+        h2 = np.append(h2, padres[0].genotipo[punto_crossover:])
 
         hijo1 = Individuo(h1.astype(int))
         hijo2 = Individuo(h2.astype(int))
 
-        return (hijo1, hijo2)
+        return hijo1, hijo2
 
-    def crossover_2pt_fijo(padres, codones_por_kernel):
+    def crossover_2pt_fijo(padres, codones_por_kernel=15):
         """
         Crossover de 2 puntos fijos. Uno de los hijos tendrá la misma longitud
         que uno de los padres y el otro hijo tendrá la misma longitud que el
@@ -163,9 +163,9 @@ class Individuo(object):
         hijo1 = Individuo(h1.astype(int))
         hijo2 = Individuo(h2.astype(int))
 
-        return (hijo1, hijo2)
+        return hijo1, hijo2
 
-    def crossover_1pt_variable(padres, codones_por_kernel):
+    def crossover_1pt_variable(padres, codones_por_kernel=15):
         """
         Crossover de 1 punto. En este caso se utiliza un punto de crossover
         diferente para cada uno de los padres. Esto permite que los genomas
@@ -189,13 +189,76 @@ class Individuo(object):
         h1 = np.append(h1, padres[0].genotipo[0:punto1_crossover])
         h1 = np.append(h1, padres[1].genotipo[punto2_crossover:])
 
-        h2 = np.append(h1, padres[1].genotipo[0:punto2_crossover])
-        h2 = np.append(h1, padres[0].genotipo[punto1_crossover:])
+        h2 = np.append(h2, padres[1].genotipo[0:punto2_crossover])
+        h2 = np.append(h2, padres[0].genotipo[punto1_crossover:])
 
-        hijo1 = Individuo(h1)
-        hijo2 = Individuo(h2)
+        hijo1 = Individuo(h1.astype(int))
+        hijo2 = Individuo(h2.astype(int))
 
-        return (hijo1, hijo2)
+        return hijo1, hijo2
+
+    def  crossover_uniforme(padres, codones_por_kernel=15, umbral = 0.5):
+        """
+        Realiza un crossover uniforme. Para cada Kernel usado en los padres
+        se genera un número aleatorio en el intervalo [0,1]. Si este número
+        es menor que un umbral dado (0.5 por defecto) el primer hijo hereda
+        los codones correspondientes a ese kernel del primer padre. En caso
+        contrario, hereda los del segundo padre. Análogamente se hace para
+        el 2° hijo pero invirtiendo los genes a heredar.
+        Sólo se heredan de los padres codones usados para decodificar el
+        fenotipo, el resto se descarta para evitar "bloating". Del padre
+        con el genotipo más largo ambos hijos heredan los kernels "extras"
+        según el umbral dado (para reducir el "bloating")
+        :param codones_por_kernel:
+        :return:
+        """
+
+        long_padre1 = int(padres[0].codones_usados / codones_por_kernel)
+        long_padre2 = int(padres[1].codones_usados / codones_por_kernel)
+        long_vector_decision = max(long_padre1, long_padre2)
+        genotipo_mas_corto = min(long_padre1, long_padre2)
+        # Reordenación de los padres de acuerdo a la longitud de su genotipo usado
+        if long_padre1 < long_padre2:
+            padre1 = padres[0].get_genotipo()
+            padre2 = padres[1].get_genotipo()
+        else:
+            padre1 = padres[1].get_genotipo()
+            padre2 = padres[0].get_genotipo()
+
+
+        vector_decision = np.random.rand(long_vector_decision)
+        h1 = np.array([])
+        h2 = np.array([])
+        print(vector_decision)
+        for i in range(long_vector_decision):
+            if i < genotipo_mas_corto:
+                if vector_decision[i] < umbral:
+                    h1 = np.append(h1, padre1[codones_por_kernel * i
+                                              :codones_por_kernel * (i+1)])
+                    h2 = np.append(h2, padre2[codones_por_kernel * i
+                                              :codones_por_kernel * (i+1)])
+                else:
+                    h1 = np.append(h1, padre2[codones_por_kernel * i
+                                              :codones_por_kernel * (i+1)])
+                    h2 = np.append(h2, padre1[codones_por_kernel * i
+                                              :codones_por_kernel * (i+1)])
+            else:
+                if vector_decision[i] < umbral:
+                    h1 = np.append(h1, padre2[codones_por_kernel * i
+                                              :codones_por_kernel * (i + 1):])
+                    h2 = np.append(h2, padre2[codones_por_kernel * i
+                                              :codones_por_kernel * (i + 1):])
+
+        hijo1 = Individuo(h1.astype(int))
+        hijo2 = Individuo(h2.astype(int))
+
+        return hijo1, hijo2
+
+
+
+
+
+
 
 
 

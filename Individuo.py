@@ -1,5 +1,6 @@
 import random
 import numpy as np
+#import random
 
 
 class Individuo(object):
@@ -9,10 +10,11 @@ class Individuo(object):
 
     tag = 0
 
-    def __init__(self, genotipo, longitud=90):
+    def __init__(self, genotipo = None, longitud_max=90):
         if genotipo is None:
-            self.genotipo = [random.randint(0, Individuo.MAX_VAL_CODON)
-                             for _ in range(longitud)]
+            self.genotipo = [random.randint(1, Individuo.MAX_VAL_CODON)
+                             for _ in range(random.randint(1, longitud_max))]
+            # TODO: en randint arriba el mínimo es 1. (0 puede dar errores) --> Que valor dejas? 15? 30?
         else:
             self.genotipo = genotipo
         self.fenotipo = None

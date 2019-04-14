@@ -65,20 +65,20 @@ def muestras_de_referencia(problema):
 
 def evaluar_fenotipo(individuo, x):
     exec(individuo.get_fenotipo(), globals())
-    evaluacion = f(x)
-    return evaluacion
+    resul = f(x)
+    return resul
 
 
-def calcula_fitness(individuo, problema, U, K0, K1, x_referencia, y_referencia, m):
+def calcula_fitness(individuo, U, K0, K1, x_referencia, y_referencia, m):
     y = evaluar_fenotipo(individuo, x_referencia)
-    sumando = 0
+    suma = 0
     for i in range(m):
         if abs(y[i]-y_referencia[i]) <= U:
             sumando = K0 * abs(y[i]-y_referencia[i])
         else:
             sumando = K1 * abs(y[i]-y_referencia[i])
-        sumando += sumando
-    return sumando
+        suma += sumando
+    return suma
 
 
 
@@ -128,3 +128,48 @@ for elem in poblacion:
     evaluacion = f(x)
     print("El resultado de la evaluación ha sido:\n", evaluacion)
 '''
+
+
+
+GRAMMAR_FILE = 'gramatica_nucleos.bnf'
+# Read grammar
+bnf_grammar = interprete_gramatica.Gramatica(GRAMMAR_FILE)
+print(bnf_grammar)
+
+# Genoma para testear las funciones en la clase Gramatica
+genoma_prueba = [1, 0, 1, 2, 1, 3, 5, 6, 1, 9, 8, 9, 1, 2, 0, 3, \
+                 1, 3, 3, 0, 1, 8, 8, 1, 1, 7, 7, 1, 2, 1, 4, 0, \
+                 6, 6, 0, 2, 3, 3, 1, 8, 2, 2, 0, 1, 1]
+fenotipo, codones_usados = bnf_grammar.generate(genoma_prueba)
+
+
+#print("El número de codones usados ha sido: ", codones_usados)
+print("El fenotipo que ha quedado tras decodificar es:\n", fenotipo)
+
+exec(fenotipo, globals())
+# Rango de x a evaluar (vectorización de la evaluación de los puntos)
+x = np.arange(-1, 1, 0.5)
+print("Puntos de evaluación:", x)
+evaluacion = f(x)
+print("El resultado de la evaluación ha sido:\n", evaluacion)
+
+'''
+x_referencia = [-1.  -0.5  0.   0.5]#
+y_referencia 
+
+def calcula_fitness(individuo, U, K0, K1, x_referencia, y_referencia, m):
+'''
+
+x_ref = np.array([-1., -0.5, 0.,  0.5])
+y_ref = np.array([79.84012, 777.3312, 756.2612, 735.1912])
+
+indiv = Individuo(genoma_prueba)
+indiv.set_fenotipo(fenotipo)
+indiv.set_codones_usados(codones_usados)
+print(indiv)
+
+print("\n\n\n\n\n")
+
+fitness = calcula_fitness(indiv, U, K0, K1, x_ref, y_ref, m=3)
+
+print("El fitness calculado es:", fitness)

@@ -25,37 +25,37 @@ def muestras_de_referencia(problema):
         M = 61
         x = np.arange(x_i, x_f, M)
         y = 8*np.exp(-2*(x-2)**2)+(2*x+1)+3*np.tanh(3*x+2)
-        return x, y
+        return x, y, M
     elif problema == 'Problema1':
         x_i, x_f = -1, 3
         M = 41
         x = np.arange(x_i, x_f, M)
         y = 2*np.exp(-2*(x-1)**2)-np.exp(-(x-1)**2)
-        return x, y
+        return x, y, M
     elif problema == 'Problema2':
         x_i, x_f = 0, 4
         M = 41
         x = np.arange(x_i, x_f, M)
         y = np.sqrt(x)
-        return x, y
+        return x, y, M
     elif problema == 'Problema3':
         x_i, x_f = 0, 4
         M = 41
         x = np.arange(x_i, x_f, M)
         y = np.exp(-x)*np.sin(2*x)
-        return x, y
+        return x, y, M
     elif problema == 'Problema4':
         x_i, x_f = 2, 6
         M = 41
         x = np.arange(x_i, x_f, M)
         y = np.log(np.log(x))
-        return x, y
+        return x, y, M
     elif problema == 'Problema5':
         x_i, x_f = 0, 10
         M = 101
         x = np.arange(x_i, x_f, M)
         y = 6*np.exp(-2*x)+2*np.sin(x)-np.cos(x)
-        return x, y
+        return x, y, M
     else:
         print("Error en la selección del problema")
 
@@ -66,9 +66,16 @@ def evaluar_fenotipo(individuo, x):
 
 
 
-def calcula_fitness(individuo, problema, U, K0, K1, x_referencia, y_referencia):
+def calcula_fitness(individuo, problema, U, K0, K1, x_referencia, y_referencia, M):
     y = evaluar_fenotipo(individuo, x_referencia)
-    
+    sumando = 0
+    for i in range(M):
+        if abs(y[i]-y_referencia[i]) <= U:
+            sumando = K0 * abs(y[i]-y_referencia[i])
+        else:
+            sumando = K1 * abs(y[i]-y_referencia[i])
+        sumando += sumando
+
 
 
 

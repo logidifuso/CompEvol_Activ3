@@ -1,8 +1,8 @@
-
+import interprete_gramatica
+from Individuo import Individuo
 import numpy as np
 
-print("Hola mundo")
-np.arange(3)
+
 
 from math import sin
 
@@ -16,7 +16,7 @@ cdef class SinOfSquareFunction(Function):
         return sin(x ** 2)
 """
 
-
+'''
 class Function(object):
     def eval(self):
         return 9
@@ -56,3 +56,16 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+'''
+
+especimen = Individuo()
+print("\n\n", especimen)
+
+
+genotipo = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+especimen = Individuo(genotipo, 6)
+print("\n\n", especimen)
+
+especimen = Individuo(longitud=6)
+print("\n\n", especimen)

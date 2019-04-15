@@ -6,11 +6,11 @@
 
 <expr> ::= <signo><real>*<K_G> | <signo><real>*<K_G><expr> | <signo><real>*<K_P> | <signo><real>*<K_P><expr> | <signo><real>*<K_S> | <signo><real>*<K_S><expr>
 
-<K_G> ::= math.exp(-<real>*(<real> - x)**2)<nulo>
+<K_G> ::= np.exp(-<real>*(<real> - x)**2)<nulo>
 
-<K_P> ::= (<real>*x + <real>)**<grado>)
+<K_P> ::= ((<real>*x + <real>)**<grado>)
 
-<K_S> ::= math.tanh(<real>*x + <real>)<nulo>
+<K_S> ::= np.tanh(<real>*x + <real>)<nulo>
 
 <signo> ::= + | -
 

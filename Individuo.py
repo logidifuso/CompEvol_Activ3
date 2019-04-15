@@ -22,6 +22,8 @@ class Individuo(object):
         self.fenotipo_compilado = False
         self.fitness = Individuo.PEOR_FITNESS
         self.id = Individuo.tag
+        self.mating_prob = None
+        self.prob_acumulada = None
         Individuo.tag += 1
 
     def __lt__(self, other):
@@ -52,7 +54,13 @@ class Individuo(object):
     def get_fenotipo(self):
         return self.fenotipo
 
-# **********************   MÉTODOS SETTERS *****************************
+    def get_prob_padre(self):
+        return self.mating_prob
+
+    def get_prob_padre_acumulada(self):
+        return self.prob_acumulada
+
+    # **********************   MÉTODOS SETTERS *****************************
 
     def set_genotipo(self, genotipo):
         self.genotipo = genotipo
@@ -67,7 +75,15 @@ class Individuo(object):
     def set_fitness(self, fitness):
         self.fitness = fitness
 
-# ----------------------------------------------------------------------------
+    def set_prob_lin(self, rank, s=1.5, mu=10):
+        self.mating_prob = (2 - s) / mu + (2 * rank * (s - 1)) / (mu * (mu - 1))
+
+    def set_prob_padre_acumulada(self, prob):
+        self.prob_acumulada = prob
+
+        # Funciones "getter" para acceder a los atributos de datos.
+
+    # ----------------------------------------------------------------------------
 #                        MÉTODOS DE VARIACIÓN
 # ----------------------------------------------------------------------------
 

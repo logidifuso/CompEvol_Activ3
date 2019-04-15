@@ -81,18 +81,77 @@ def calcula_fitness(individuo, U, K0, K1, x_referencia, y_referencia, m):
     return suma
 
 
+def seleccion_sus(poblacion):
+    """
+    Selección de padres usando el algoritmo estocástico universal (SUS)
+    :param poblacion:
+    :return:
+    """
+    seleccion_padres = 0
+    tamano_poblacion = len(poblacion)
+    # En nuestro caso lamdda = al tamanno de la población,
+    # pero dejo la variable para posibles futuros experimentos
+    lambda_padres = tamano_poblacion
+    indice = 0
+    r = np.random.uniform(0, 1/lambda_padres)
+    lista_padres = []
+
+    while seleccion_padres < lambda_padres:
+        while r <= poblacion[indice].get_prob_padre_acumulada():
+            lista_padres.append(poblacion[indice])
+            r = r + 1/lambda_padres
+            seleccion_padres += 1
+        indice += 1
+    return lista_padres
+
+
+def seleccion_torneo(poblacion):
+    # TODO: Implementar la selección por torneo. Referencia ponyge2
+    aux = poblacion
+    return aux
+
+
+def paso_generacional(poblacion):
+    for elem in poblacion:
 
 
 
 
+    ##############################################
+    # Parte 5 - CRUZE Y MUTACIÓN
+    ##############################################
+    shuffle(lista_padres)  # Barajamos los padres --> cruze aleatorio
+    elite = max(poblacion)  # Reservo el mejor de la población por si debemos aplicar elitismo
+    poblacion = []  # Reseteo de la población - aplicamos relevo generacional
 
+    i = 0
+    while i < (tamano_poblacion - 1):
+        hijos = lista_padres[i].cruze(lista_padres[i + 1])  # Generamos los hijos (por parejas)
+        poblacion.append(Individuo(hijos[0]))
+        poblacion.append(Individuo(hijos[1]))
+        poblacion[i].mutacion(prob_mutacion)  # Se muta cada uno
+        poblacion[i + 1].mutacion(prob_mutacion)  # de los hijos
+        poblacion[i].set_fitness(seleccion_func)
+        poblacion[i + 1].set_fitness(seleccion_func)
+        i += 2
 
+    mejor_hijo = max(poblacion)
 
+    if elite > mejor_hijo:
+        peor_hijo = min(poblacion)
+        poblacion.remove(peor_hijo)
+        poblacion.append(elite)
 
+    poblacion.sort()
+    pos = 0
+    acum = 0
+    for elem in poblacion:
+        elem.set_prob_lin(pos, s, tamano_poblacion)
+        acum += elem.get_prob_padre()
+        elem.set_prob_padre_acumulada(acum)
+        pos += 1
 
-
-
-
+    return poblacion
 
 
 """ --------------------------------------------------------------------------
@@ -161,7 +220,7 @@ def calcula_fitness(individuo, U, K0, K1, x_referencia, y_referencia, m):
 '''
 
 x_ref = np.array([-1., -0.5, 0.,  0.5])
-y_ref = np.array([79.84012, 777.3312, 756.2612, 735.1912])
+y_ref = np.array([798.4012, 777.3312, 756.2612, 735.1912])
 
 indiv = Individuo(genoma_prueba)
 indiv.set_fenotipo(fenotipo)

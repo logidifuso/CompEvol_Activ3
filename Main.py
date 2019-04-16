@@ -86,6 +86,7 @@ def calcula_fitness(individuo, u, k0, k1, x_referencia, y_referencia, m):
         else:
             sumando = k1 * abs(y[i]-y_referencia[i])
         suma += sumando
+    suma /= m
     return suma
 
 
@@ -129,6 +130,23 @@ def seleccion_torneo(_poblacion):
     # TODO: Implementar la selección por torneo. Referencia ponyge2
     aux = _poblacion
     return aux
+
+
+def evalua_poblacion(_poblacion, _target_fitness):
+    fitnesses = []
+    for el in _poblacion:
+        fitnesses.append(el.get_fitness())
+    media_fitness = np.average(fitnesses)
+    peor = max(fitnesses)
+    mejor = min(fitnesses)
+    # varianza = np.var(fitnesses)
+    desviacion = np.std(fitnesses)
+    mejor_indiv = _poblacion[0]
+    if mejor <= _target_fitness:
+        hit = True
+    else:
+        hit = False
+    return hit, mejor_indiv, media_fitness, mejor, peor, desviacion
 
 
 def paso_generacional(_poblacion, prob_mutacion):
@@ -181,6 +199,23 @@ def paso_generacional(_poblacion, prob_mutacion):
     return hijos
 
 
+def ejecucion(max_generaciones):
+    estadisticas = []
+    poblacion_actual = []
+    for _ in range(TAMANO_POBLACION):
+        poblacion_actual.append(Individuo(longitud_max=LONG_MAX_GENOTIPO))
+
+    num_generacion = 1
+    while num_generacion < max_generaciones:
+        nueva_generacion = paso_generacional(poblacion_actual, p_mutacion)
+        estadistica_actual = evalua_poblacion(nueva_generacion, TARGET_FITNESS)
+        if (estadistica_actual[0] is True) and (primer_hit is None):
+            primer_hit = num_generacion
+        estadisticas.append(estadistica_actual)
+        num_generacion +=1
+
+
+
 """ --------------------------------------------------------------------------
   1. Lee Gramática
   2. Genera referencias para el cálculo de fitness según el tipo de problema
@@ -190,21 +225,31 @@ def paso_generacional(_poblacion, prob_mutacion):
                                                                                 
     -------------------------------------------------------------------------- """
 gramatica_bnf = interprete_gramatica.Gramatica(ARCHIVO_GRAMATICA)
-poblacion = []
+
 
 X_REF, Y_REF, M = muestras_de_referencia(PROBLEMA_TIPO)
+TARGET_FITNESS = K0 * U
 
-for _ in range(TAMANO_POBLACION):
-    poblacion.append(Individuo(longitud_max=LONG_MAX_GENOTIPO))
+#poblacion = []
+#for _ in range(TAMANO_POBLACION):
+#    poblacion.append(Individuo(longitud_max=LONG_MAX_GENOTIPO))
 
 """ --------------------------------------------------------------------------
                             Ciclo generacional
     -------------------------------------------------------------------------- """
 
-
-
 print("\n\n\n\n")
 _hijos = paso_generacional(poblacion, p_mutacion)
+
+
+
+
+
+
+
+
+
+
 
 for elem in poblacion:
     mapeo_y_fitness(elem, U, K0, K1, X_REF, Y_REF, M)
@@ -216,23 +261,6 @@ for elem in _hijos:
 
 # for elem in hijos:
 #    print("\n\nIndividuo hijo:\n", elem)   # todo: quitar print
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 '''

@@ -228,7 +228,8 @@ gramatica_bnf = interprete_gramatica.Gramatica(ARCHIVO_GRAMATICA)
 
 
 X_REF, Y_REF, M = muestras_de_referencia(PROBLEMA_TIPO)
-TARGET_FITNESS = K0 * U
+TARGET_FITNESS = K0 * U  # TODO: OJO!!! que esto no garantiza un hit completo
+                         # TODO: Podria ser que todos los errores fueran 0 y uno "grande"
 
 #poblacion = []
 #for _ in range(TAMANO_POBLACION):

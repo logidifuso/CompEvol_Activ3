@@ -32,12 +32,17 @@ class Individuo(object):
     def __str__(self):
         return ("Individuo ID: {0}\nGenotipo: {1}\nFenotipo Compilado: {2}\n"
                 "Fenotipo:\n{3}\nValor de fitness: {4}\n"
-                "Número de codones usados: {5}".format(self.id,
-                                                       self.genotipo,
-                                                       self.fenotipo_compilado,
-                                                       self.fenotipo,
-                                                       self.fitness,
-                                                       self.codones_usados))
+                "Número de codones usados: {5}\n"
+                "Probabilidad lineal de cruze: {6}:\n"
+                "Probabilidad acumulada para cruze: {7}:"
+                .format(self.id,
+                        self.genotipo,
+                        self.fenotipo_compilado,
+                        self.fenotipo,
+                        self.fitness,
+                        self.codones_usados,
+                        self.mating_prob,
+                        self.prob_acumulada))
 
 
 # ***********************   MÉTODOS GETTERS ***************************

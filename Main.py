@@ -86,11 +86,11 @@ def calcula_fitness(individuo, u, k0, k1, x_referencia, y_referencia, m):
         return 1.0e32   # Retorna un número elevado si el individuo es inválido
     y = evaluar_fenotipo(individuo, x_referencia)
     suma = 0
-    for i in range(m):
-        if abs(y[i]-y_referencia[i]) <= u:
-            sumando = k0 * abs(y[i]-y_referencia[i])
+    for j in range(m):
+        if abs(y[j]-y_referencia[j]) <= u:
+            sumando = k0 * abs(y[j]-y_referencia[j])
         else:
-            sumando = k1 * abs(y[i]-y_referencia[i])
+            sumando = k1 * abs(y[j]-y_referencia[j])
         suma += sumando
     suma /= m
     return suma
@@ -181,19 +181,19 @@ def paso_generacional(_poblacion, prob_mutacion):
     elite = max(_poblacion)  # Reservo el mejor de la población por si debemos aplicar elitismo
     hijos = []  # Reseteo de la población - aplicamos relevo generacional
 
-    i = 0
-    while i < (tamano_poblacion - 1):
-        padres = [lista_padres[i], lista_padres[i+1]]
+    j = 0
+    while j < (tamano_poblacion - 1):
+        padres = [lista_padres[j], lista_padres[j+1]]
         hijo1, hijo2 = Individuo.crossover_1pt_fijo(padres, codones_por_kernel=15)
         hijos.append(hijo1)
         hijos.append(hijo2)
         # 3) Mutaciones
-        hijos[i].muta_en_kernel(prob_mutacion, codones_por_kernel=15)
-        hijos[i+1].muta_en_kernel(prob_mutacion, codones_por_kernel=15)
+        hijos[j].muta_en_kernel(prob_mutacion, codones_por_kernel=15)
+        hijos[j+1].muta_en_kernel(prob_mutacion, codones_por_kernel=15)
         # 4) Mapeo y evaluación del fitness de los hijos
-        mapeo_y_fitness(hijos[i], U, K0, K1, X_REF, Y_REF, M)
-        mapeo_y_fitness(hijos[i + 1], U, K0, K1, X_REF, Y_REF, M)
-        i += 2
+        mapeo_y_fitness(hijos[j], U, K0, K1, X_REF, Y_REF, M)
+        mapeo_y_fitness(hijos[j + 1], U, K0, K1, X_REF, Y_REF, M)
+        j += 2
 
     mejor_hijo = max(hijos)
 
@@ -206,7 +206,7 @@ def paso_generacional(_poblacion, prob_mutacion):
 
 
 def ejecucion(max_generaciones):
-    primer_hit = None
+    _primer_hit = None
     estadisticas = []
     poblacion_actual = []
     for _ in range(TAMANO_POBLACION):
@@ -216,13 +216,11 @@ def ejecucion(max_generaciones):
     while num_generacion < max_generaciones:
         nueva_generacion = paso_generacional(poblacion_actual, p_mutacion)
         estadistica_actual = evalua_poblacion(nueva_generacion, TARGET_FITNESS)
-        if (estadistica_actual[0] is True) and (primer_hit is None):
-            primer_hit = num_generacion
+        if (estadistica_actual[0] is True) and (_primer_hit is None):
+            _primer_hit = num_generacion
         estadisticas.append(estadistica_actual)
-        num_generacion +=1
-    return estadisticas  # TODO: OJO, que no estás devolviendo el primer hit todavía
-                         # todo: A ver como lo sacas del vector de hits
-
+        num_generacion += 1
+    return _primer_hit, estadisticas
 
 
 """ --------------------------------------------------------------------------
@@ -238,37 +236,35 @@ gramatica_bnf = interprete_gramatica.Gramatica(ARCHIVO_GRAMATICA)
 
 X_REF, Y_REF, M = muestras_de_referencia(PROBLEMA_TIPO)
 TARGET_FITNESS = K0 * U  # TODO: OJO!!! que esto no garantiza un hit completo
-                         # TODO: Podria ser que todos los errores fueran 0 y uno "grande"
-
-
+# TODO: Podria ser que todos los errores fueran 0 y uno "grande"
 
 
 ejecuciones = []
 AES = 0
 SR = 0
 for i in range(NUM_EJECUCIONES):
-    #print("ejecucion número: ", i) # todo: A quitar
+    # print("ejecucion número: ", i)  todo: A quitar
     start = time.time()
-    ejecucion(MAX_GENERACIONES)
-    if ex.generation_to_sol != None:
-        AES += ex.generation_to_sol*ex._lambda
+    primer_hit, estad_ejecucion = ejecucion(MAX_GENERACIONES)
+    if primer_hit is not None:
+        AES += primer_hit * TAMANO_POBLACION
         SR += 1
     end = time.time()
     print("Tiempo requerido: %s" % (end-start))
-    ejecuciones.append(ex.resultados)
+    ejecuciones.append(estad_ejecucion)
 
 AES /= NUM_EJECUCIONES
 SR = (100*SR) / NUM_EJECUCIONES
 print("\nNumero de ""runs"": ", NUM_EJECUCIONES)
-print("Usando como criterio de exito un valor de fitness máximo =", float(lista_param[19]) )
+print("Usando como criterio de exito un valor de fitness máximo =", TARGET_FITNESS)
 print("El AES obtenido es:", AES)
 print("El SR (Success Rate) obtenido es: " + str(SR) + "%")
 
 ejecuciones = np.asarray(ejecuciones)   # Typecast como np array para facilitar los cálculos de las estadísticas
 
 
-#poblacion = []
-#for _ in range(TAMANO_POBLACION):
+# poblacion = []
+# for _ in range(TAMANO_POBLACION):
 #    poblacion.append(Individuo(longitud_max=LONG_MAX_GENOTIPO))
 
 """ --------------------------------------------------------------------------

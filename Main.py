@@ -77,7 +77,7 @@ def calcula_fitness(individuo, U, K0, K1, x_referencia, y_referencia, m):
         suma += sumando
     return suma
 
-def mapeo_y_fitnes(individuo):
+def mapeo_y_fitness(individuo):
     # 1) Mapear genotipo a fenotipo y asignarlo al individuo -> generate -> set_fenotipo
     fenotipo, codones_usados = bnf_grammar.generate(hijos[i].get_genotipo())
     _indiv.set_fenotipo(fenotipo)
@@ -155,8 +155,8 @@ def paso_generacional(poblacion):
         hijos[i].muta_en_kernel(prob_mutacion, codones_por_kernel=15)
         hijos[i+1].muta_en_kernel(prob_mutacion, codones_por_kernel=15)
         # 4) Mapeo y evaluación del fitness de los hijos
-        mapeo_y_fitnes(hijos[i])
-        mapeo_y_fitnes(hijos[i+1])
+        mapeo_y_fitness(hijos[i])
+        mapeo_y_fitness(hijos[i + 1])
         i +=2
 
     mejor_hijo = max(hijos)

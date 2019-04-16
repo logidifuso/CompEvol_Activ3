@@ -88,7 +88,7 @@ class Individuo(object):
 # ----------------------------------------------------------------------------
 
 # ************************* MUTACIONES ***************************************
-    def muta_en_kernel(self, p_mut, codones_por_kernel):
+    def muta_en_kernel(self, p_mut, codones_por_kernel=15):
         """
         Muta el genoma de un individuo escogiendo aleatoriamente un valor
         entero con probabilidad p_mut en cada uno de los kernels, pero SIN

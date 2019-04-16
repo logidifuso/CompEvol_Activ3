@@ -21,7 +21,6 @@ ARCHIVO_GRAMATICA = 'gramatica_nucleos.bnf'
                                 Funciones
     -------------------------------------------------------------------------- """
 
-
 def muestras_de_referencia(problema):
     if problema == 'Problema0':
         x_i, x_f = -2, 4
@@ -62,12 +61,10 @@ def muestras_de_referencia(problema):
     else:
         print("Error en la selección del problema")
 
-
 def evaluar_fenotipo(individuo, x):
     exec(individuo.get_fenotipo(), globals())
     resul = f(x)
     return resul
-
 
 def calcula_fitness(individuo, U, K0, K1, x_referencia, y_referencia, m):
     y = evaluar_fenotipo(individuo, x_referencia)
@@ -80,6 +77,18 @@ def calcula_fitness(individuo, U, K0, K1, x_referencia, y_referencia, m):
         suma += sumando
     return suma
 
+def mapeo_y_fitnes(individuo):
+    # 1) Mapear genotipo a fenotipo y asignarlo al individuo -> generate -> set_fenotipo
+    fenotipo, codones_usados = bnf_grammar.generate(hijos[i].get_genotipo())
+    _indiv.set_fenotipo(fenotipo)
+    # 2) evaluar y apuntar el fitness al individuo --> calcula_fitness
+    fitness_indiv = calcula_fitness(_indiv, U=0.1, K0=0.1, K1=1,
+                                    x_referencia, y_referencia, m=41)
+    _indiv.set_fitness(fitness_indiv)
+
+    poblacion[i].set_fitness(seleccion_func)
+    poblacion[i + 1].set_fitness(seleccion_func)
+    i += 2
 
 def seleccion_sus(poblacion):
     """
@@ -104,55 +113,60 @@ def seleccion_sus(poblacion):
         indice += 1
     return lista_padres
 
-
 def seleccion_torneo(poblacion):
     # TODO: Implementar la selección por torneo. Referencia ponyge2
     aux = poblacion
     return aux
 
-
 def paso_generacional(poblacion):
-    for elem in poblacion:
 
+    elite = min(poblacion).get_fitness()
+    tamano_poblacion = len(poblacion)
+    # 1) Busqueda y selección
+    # TODO: Implemento solo SUS de momento. Opciones: if para elegir o \
+    # varias funciones paso_generacional
 
-
-
-    ##############################################
-    # Parte 5 - CRUZE Y MUTACIÓN
-    ##############################################
-    shuffle(lista_padres)  # Barajamos los padres --> cruze aleatorio
-    elite = max(poblacion)  # Reservo el mejor de la población por si debemos aplicar elitismo
-    poblacion = []  # Reseteo de la población - aplicamos relevo generacional
-
-    i = 0
-    while i < (tamano_poblacion - 1):
-        hijos = lista_padres[i].cruze(lista_padres[i + 1])  # Generamos los hijos (por parejas)
-        poblacion.append(Individuo(hijos[0]))
-        poblacion.append(Individuo(hijos[1]))
-        poblacion[i].mutacion(prob_mutacion)  # Se muta cada uno
-        poblacion[i + 1].mutacion(prob_mutacion)  # de los hijos
-        poblacion[i].set_fitness(seleccion_func)
-        poblacion[i + 1].set_fitness(seleccion_func)
-        i += 2
-
-    mejor_hijo = max(poblacion)
-
-    if elite > mejor_hijo:
-        peor_hijo = min(poblacion)
-        poblacion.remove(peor_hijo)
-        poblacion.append(elite)
-
+    # 1.a) Asignación de las probabilidades de seleccion
     poblacion.sort()
     pos = 0
     acum = 0
+
     for elem in poblacion:
         elem.set_prob_lin(pos, s, tamano_poblacion)
         acum += elem.get_prob_padre()
         elem.set_prob_padre_acumulada(acum)
         pos += 1
 
-    return poblacion
+    # 1.b) Selección de padres
+    lista_padres = seleccion_sus(poblacion)
+    # 2) Cruzes y mutaciones
+    # TODO: De momento solo con cruze de 1punto fijo!!
+    shuffle(lista_padres)  # Barajamos los padres --> cruze aleatorio
+    elite = max(poblacion)  # Reservo el mejor de la población por si debemos aplicar elitismo
+    hijos = []  # Reseteo de la población - aplicamos relevo generacional
 
+    i = 0
+    while i < (tamano_poblacion - 1):
+        padres = [lista_padres[i], lista_padres[i+1]]
+        hijo1, hijo2 = Individuo.crossover_1pt_fijo(padres, codones_por_kernel=15)
+        hijos.append(Individuo(hijo1))
+        hijos.append(Individuo(hijo2))
+        # 3) Mutaciones
+        hijos[i].muta_en_kernel(prob_mutacion, codones_por_kernel=15)
+        hijos[i+1].muta_en_kernel(prob_mutacion, codones_por_kernel=15)
+        # 4) Mapeo y evaluación del fitness de los hijos
+        mapeo_y_fitnes(hijos[i])
+        mapeo_y_fitnes(hijos[i+1])
+        i +=2
+
+    mejor_hijo = max(hijos)
+
+    if elite > mejor_hijo:
+        peor_hijo = min(poblacion)
+        poblacion.remove(peor_hijo)
+        poblacion.append(elite)
+
+    return hijos
 
 """ --------------------------------------------------------------------------
                             Lee Gramática e Inicializa población

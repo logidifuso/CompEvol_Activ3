@@ -22,7 +22,7 @@ S = 0.5
 ARCHIVO_GRAMATICA = 'gramatica_nucleos.bnf'
 PROBLEMA_TIPO = 'Problema1'
 
-p_mutacion = 0.1  # todo: decidir si es una constante o se usa en algo memético
+p_mutacion = 0.0001  # todo: decidir si es una constante o se usa en algo memético
 """ --------------------------------------------------------------------------
                                 Funciones
     -------------------------------------------------------------------------- """
@@ -32,37 +32,37 @@ def muestras_de_referencia(problema):
     if problema == 'Problema0':
         x_i, x_f = -2, 4
         m = 61
-        x = np.arange(x_i, x_f, m)
+        x = np.linspace(x_i, x_f, m)
         y = 8*np.exp(-2*(x-2)**2)+(2*x+1)+3*np.tanh(3*x+2)
         return x, y, m
     elif problema == 'Problema1':
         x_i, x_f = -1, 3
         m = 41
-        x = np.arange(x_i, x_f, m)
+        x = np.linspace(x_i, x_f, m)
         y = 2*np.exp(-2*(x-1)**2)-np.exp(-(x-1)**2)
         return x, y, m
     elif problema == 'Problema2':
         x_i, x_f = 0, 4
         m = 41
-        x = np.arange(x_i, x_f, m)
+        x = np.linspace(x_i, x_f, m)
         y = np.sqrt(x)
         return x, y, m
     elif problema == 'Problema3':
         x_i, x_f = 0, 4
         m = 41
-        x = np.arange(x_i, x_f, m)
+        x = np.linspace(x_i, x_f, m)
         y = np.exp(-x)*np.sin(2*x)
         return x, y, m
     elif problema == 'Problema4':
         x_i, x_f = 2, 6
         m = 41
-        x = np.arange(x_i, x_f, m)
+        x = np.linspace(x_i, x_f, m)
         y = np.log(np.log(x))
         return x, y, m
     elif problema == 'Problema5':
         x_i, x_f = 0, 10
         m = 101
-        x = np.arange(x_i, x_f, m)
+        x = np.linspace(x_i, x_f, m)
         y = 6*np.exp(-2*x)+2*np.sin(x)-np.cos(x)
         return x, y, m
     else:
@@ -77,7 +77,7 @@ def evaluar_fenotipo(individuo, x):
 
 def calcula_fitness(individuo, u, k0, k1, x_referencia, y_referencia, m):
     if individuo.get_fenotipo() is None:
-        return 1.0e32
+        return 1.0e32   # Retorna un número elevado si el individuo es inválido
     y = evaluar_fenotipo(individuo, x_referencia)
     suma = 0
     for i in range(m):
@@ -91,7 +91,8 @@ def calcula_fitness(individuo, u, k0, k1, x_referencia, y_referencia, m):
 
 def mapeo_y_fitness(individuo, u, k0, k1, x_referencia, y_referencia, m):
     # 1) Mapear genotipo a fenotipo y asignarlo al individuo -> generate -> set_fenotipo
-    _fenotipo, _codones_usados = gramatica_bnf.generate(individuo.get_genotipo())
+    _genotipo = individuo.get_genotipo()
+    _fenotipo, _codones_usados = gramatica_bnf.generate(_genotipo)
     individuo.set_fenotipo(_fenotipo)
     individuo.set_codones_usados(_codones_usados)
     # 2) evaluar y apuntar el fitness al individuo --> calcula_fitness
@@ -160,14 +161,14 @@ def paso_generacional(_poblacion, prob_mutacion):
     while i < (tamano_poblacion - 1):
         padres = [lista_padres[i], lista_padres[i+1]]
         hijo1, hijo2 = Individuo.crossover_1pt_fijo(padres, codones_por_kernel=15)
-        hijos.append(Individuo(hijo1))
-        hijos.append(Individuo(hijo2))
+        hijos.append(hijo1)
+        hijos.append(hijo2)
         # 3) Mutaciones
         hijos[i].muta_en_kernel(prob_mutacion, codones_por_kernel=15)
         hijos[i+1].muta_en_kernel(prob_mutacion, codones_por_kernel=15)
         # 4) Mapeo y evaluación del fitness de los hijos
-        mapeo_y_fitness(hijos[i], K0, K1, X_REF, Y_REF, M)
-        mapeo_y_fitness(hijos[i + 1], K0, K1, X_REF, Y_REF, M)
+        mapeo_y_fitness(hijos[i], U, K0, K1, X_REF, Y_REF, M)
+        mapeo_y_fitness(hijos[i + 1], U, K0, K1, X_REF, Y_REF, M)
         i += 2
 
     mejor_hijo = max(hijos)
@@ -180,19 +181,6 @@ def paso_generacional(_poblacion, prob_mutacion):
     return hijos
 
 
-x_i, x_f = -2, 4
-m = 8
-x = np.linspace(x_i, x_f, m)
-y = 8*np.exp(-2*(x-2)**2)+(2*x+1)+3*np.tanh(3*x+2)
-print(x)
-input()
-
-
-leches = "Problema1"
-xtesteo, ytesteo, mtesteo = muestras_de_referencia(leches)
-print(xtesteo, ytesteo, mtesteo)
-input()
-
 """ --------------------------------------------------------------------------
   1. Lee Gramática
   2. Genera referencias para el cálculo de fitness según el tipo de problema
@@ -204,7 +192,7 @@ input()
 gramatica_bnf = interprete_gramatica.Gramatica(ARCHIVO_GRAMATICA)
 poblacion = []
 
-XREF, YREF, M = muestras_de_referencia(PROBLEMA_TIPO)
+X_REF, Y_REF, M = muestras_de_referencia(PROBLEMA_TIPO)
 
 for _ in range(TAMANO_POBLACION):
     poblacion.append(Individuo(longitud_max=LONG_MAX_GENOTIPO))
@@ -213,11 +201,18 @@ for _ in range(TAMANO_POBLACION):
                             Ciclo generacional
     -------------------------------------------------------------------------- """
 
+
+
+print("\n\n\n\n")
+_hijos = paso_generacional(poblacion, p_mutacion)
+
 for elem in poblacion:
-    mapeo_y_fitness(elem, U, K0, K1, XREF, YREF, M)
+    mapeo_y_fitness(elem, U, K0, K1, X_REF, Y_REF, M)
     print("\n\nIndividuo:\n", elem)   # todo: quitar print
 
-# hijos = paso_generacional(poblacion, p_mutacion)
+for elem in _hijos:
+    print(elem)
+    print("\n")
 
 # for elem in hijos:
 #    print("\n\nIndividuo hijo:\n", elem)   # todo: quitar print

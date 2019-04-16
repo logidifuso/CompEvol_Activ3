@@ -1,19 +1,22 @@
 import random
 import numpy as np
-#import random
+import random
 
 
 class Individuo(object):
 
     MAX_VAL_CODON = 256
-    PEOR_FITNESS = 1e9
+    PEOR_FITNESS = 1.0e32
 
     tag = 0
 
     def __init__(self, genotipo = None, longitud_max=90):
         if genotipo is None:
-            self.genotipo = [random.randint(1, Individuo.MAX_VAL_CODON)
-                             for _ in range(random.randint(1, longitud_max))]
+            self.genotipo = [random.randint(0, Individuo.MAX_VAL_CODON)
+                             for _ in range(random.randint(16, longitud_max))]
+            # genera un individuo con un genotipo de longitud entre 16 y el
+            # máximo establecido. La idea es evitar comenzar con un gran número
+            # de individuos inválidos.
             # TODO: en randint arriba el mínimo es 1. (0 puede dar errores) --> Que valor dejas? 15? 30?
         else:
             self.genotipo = genotipo
@@ -98,11 +101,11 @@ class Individuo(object):
         Muta el genoma de un individuo escogiendo aleatoriamente un valor
         entero con probabilidad p_mut en cada uno de los kernels, pero SIN
         MODIFICAR EL TIPO DE KERNEL.
-        Sólo se consideran los codones usados
         :param p_mut: probabilidad de mutación
         :param codones_por_kernel: número de codones usados por kernel (15 en este caso)
         """
-        for i in range(0, self.codones_usados):
+        pos_max = len(self.get_genotipo())
+        for i in range(0, pos_max):
             if i % codones_por_kernel != 0:
                 if random.random() < p_mut:
                     self.genotipo[i] = random.randint(0, Individuo.MAX_VAL_CODON)
@@ -110,12 +113,12 @@ class Individuo(object):
     def muta_n_veces_por_indiv(self, num_mutaciones):
         """
         Muta aleatoriamente el genoma de un individuo un número de veces dado por
-        n_mutaciones. Las posiciones de los codones mutados son aleatorias. Sólo
-        se consideran los codones usados para obtener el fenotipo.
+        n_mutaciones. Las posiciones de los codones mutados son aleatorias.
         :param num_mutaciones: número de mutaciones a realizar en el individuo
         """
+        pos_max = len(self.get_genotipo())
         for _ in range(num_mutaciones):
-            pos = random.randint(0, self.codones_usados)
+            pos = random.randint(0, pos_max)
             self.genotipo[pos] = random.randint(0, Individuo.MAX_VAL_CODON)
 
 # ************************** RECOMBINACIÓN **********************************
@@ -124,15 +127,15 @@ class Individuo(object):
         Crossover de 1punto fijo. Produce 2 hijos usando recombinación de punto
         fijo. Uno de los hijos tendrá la misma longitud que uno de los padres y
         el otro hijo tendrá la misma longitud que el otro padre.
-        El punto de crossover se encuentra dentro de la porción de genoma usado
-        por los 2 padres.
         !!!!!!!!!!:param other:
         !!!!!!!!!!!:return:
         """
-        punto_crossover_max = min(padres[0].codones_usados, padres[1].codones_usados)
-        punto_crossover = random.randint(1, punto_crossover_max/codones_por_kernel)
+        long_pad1 = len(padres[0].get_genotipo())
+        long_pad2 = len(padres[1].get_genotipo())
+        punto_crossover_max = min(long_pad1, long_pad2)
+        punto_crossover = random.randint(1, punto_crossover_max//codones_por_kernel)
         punto_crossover *= codones_por_kernel
-
+        print("Punto de crossover es:", punto_crossover)
         h1 = np.array([])
         h2 = np.array([])
 
@@ -158,12 +161,12 @@ class Individuo(object):
         """
 
         punto_crossover_max = min(padres[0].codones_usados, padres[1].codones_usados)
-        punto1_crossover = random.randint(1, punto_crossover_max/codones_por_kernel)
-        punto2_crossover = random.randint(1, punto_crossover_max/codones_por_kernel)
+        punto1_crossover = random.randint(1, punto_crossover_max//codones_por_kernel)
+        punto2_crossover = random.randint(1, punto_crossover_max//codones_por_kernel)
 
 
         while punto1_crossover == punto2_crossover:
-            punto2_crossover = random.randint(1, punto_crossover_max/codones_por_kernel)
+            punto2_crossover = random.randint(1, punto_crossover_max//codones_por_kernel)
         if punto2_crossover < punto1_crossover:
             aux = punto1_crossover
             punto1_crossover = punto2_crossover
@@ -202,9 +205,9 @@ class Individuo(object):
         punto_crossover_max2 = padres[1].codones_usados
 
         punto1_crossover = codones_por_kernel * \
-                           random.randint(1, punto_crossover_max1/codones_por_kernel)
+                           random.randint(1, punto_crossover_max1//codones_por_kernel)
         punto2_crossover = codones_por_kernel * \
-                           random.randint(1, punto_crossover_max2/codones_por_kernel)
+                           random.randint(1, punto_crossover_max2//codones_por_kernel)
 
         h1 = np.array([])
         h2 = np.array([])
@@ -236,8 +239,8 @@ class Individuo(object):
         :return:
         """
 
-        long_padre1 = int(padres[0].codones_usados / codones_por_kernel)
-        long_padre2 = int(padres[1].codones_usados / codones_por_kernel)
+        long_padre1 = padres[0].codones_usados // codones_por_kernel
+        long_padre2 = padres[1].codones_usados // codones_por_kernel
         long_vector_decision = max(long_padre1, long_padre2)
         genotipo_mas_corto = min(long_padre1, long_padre2)
         # Reordenación de los padres de acuerdo a la longitud de su genotipo usado

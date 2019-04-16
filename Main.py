@@ -3,6 +3,9 @@
     -------------------------------------------------------------------------- """
 import random
 import numpy as np
+import time
+import csv
+import matplotlib.pyplot as plt
 import interprete_gramatica
 from Individuo import Individuo
 
@@ -23,6 +26,9 @@ ARCHIVO_GRAMATICA = 'gramatica_nucleos.bnf'
 PROBLEMA_TIPO = 'Problema1'
 
 p_mutacion = 0.0001  # todo: decidir si es una constante o se usa en algo memético
+
+NUM_EJECUCIONES = 10
+MAX_GENERACIONES = 3
 """ --------------------------------------------------------------------------
                                 Funciones
     -------------------------------------------------------------------------- """
@@ -200,6 +206,7 @@ def paso_generacional(_poblacion, prob_mutacion):
 
 
 def ejecucion(max_generaciones):
+    primer_hit = None
     estadisticas = []
     poblacion_actual = []
     for _ in range(TAMANO_POBLACION):
@@ -213,6 +220,8 @@ def ejecucion(max_generaciones):
             primer_hit = num_generacion
         estadisticas.append(estadistica_actual)
         num_generacion +=1
+    return estadisticas  # TODO: OJO, que no estás devolviendo el primer hit todavía
+                         # todo: A ver como lo sacas del vector de hits
 
 
 
@@ -231,6 +240,33 @@ X_REF, Y_REF, M = muestras_de_referencia(PROBLEMA_TIPO)
 TARGET_FITNESS = K0 * U  # TODO: OJO!!! que esto no garantiza un hit completo
                          # TODO: Podria ser que todos los errores fueran 0 y uno "grande"
 
+
+
+
+ejecuciones = []
+AES = 0
+SR = 0
+for i in range(NUM_EJECUCIONES):
+    #print("ejecucion número: ", i) # todo: A quitar
+    start = time.time()
+    ejecucion(MAX_GENERACIONES)
+    if ex.generation_to_sol != None:
+        AES += ex.generation_to_sol*ex._lambda
+        SR += 1
+    end = time.time()
+    print("Tiempo requerido: %s" % (end-start))
+    ejecuciones.append(ex.resultados)
+
+AES /= NUM_EJECUCIONES
+SR = (100*SR) / NUM_EJECUCIONES
+print("\nNumero de ""runs"": ", NUM_EJECUCIONES)
+print("Usando como criterio de exito un valor de fitness máximo =", float(lista_param[19]) )
+print("El AES obtenido es:", AES)
+print("El SR (Success Rate) obtenido es: " + str(SR) + "%")
+
+ejecuciones = np.asarray(ejecuciones)   # Typecast como np array para facilitar los cálculos de las estadísticas
+
+
 #poblacion = []
 #for _ in range(TAMANO_POBLACION):
 #    poblacion.append(Individuo(longitud_max=LONG_MAX_GENOTIPO))
@@ -239,17 +275,9 @@ TARGET_FITNESS = K0 * U  # TODO: OJO!!! que esto no garantiza un hit completo
                             Ciclo generacional
     -------------------------------------------------------------------------- """
 
+'''
 print("\n\n\n\n")
 _hijos = paso_generacional(poblacion, p_mutacion)
-
-
-
-
-
-
-
-
-
 
 
 for elem in poblacion:
@@ -262,7 +290,7 @@ for elem in _hijos:
 
 # for elem in hijos:
 #    print("\n\nIndividuo hijo:\n", elem)   # todo: quitar print
-
+'''
 
 '''
 GRAMMAR_FILE = 'gramatica_nucleos.bnf'

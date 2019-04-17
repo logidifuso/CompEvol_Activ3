@@ -106,6 +106,8 @@ class Individuo(object):
         """
         pos_max = len(self.get_genotipo())
         for i in range(0, pos_max):
+            # if random.random() < p_mut:
+            #     self.genotipo[i] = random.randint(0, Individuo.MAX_VAL_CODON)
             if i % codones_por_kernel != 0:
                 if random.random() < p_mut:
                     self.genotipo[i] = random.randint(0, Individuo.MAX_VAL_CODON)
@@ -135,7 +137,6 @@ class Individuo(object):
         punto_crossover_max = min(long_pad1, long_pad2)
         punto_crossover = random.randint(1, punto_crossover_max//codones_por_kernel)
         punto_crossover *= codones_por_kernel
-        print("Punto de crossover es:", punto_crossover)
         h1 = np.array([])
         h2 = np.array([])
 
@@ -159,14 +160,17 @@ class Individuo(object):
         :param codones_por_kernel:
         :return:
         """
+        long_pad1 = len(padres[0].get_genotipo())
+        long_pad2 = len(padres[1].get_genotipo())
+        punto_crossover_max = min(long_pad1, long_pad2)
 
-        punto_crossover_max = min(padres[0].codones_usados, padres[1].codones_usados)
-        punto1_crossover = random.randint(1, punto_crossover_max//codones_por_kernel)
-        punto2_crossover = random.randint(1, punto_crossover_max//codones_por_kernel)
+        #punto_crossover_max = min(padres[0].codones_usados, padres[1].codones_usados)
+        punto1_crossover = random.randint(0, punto_crossover_max//codones_por_kernel)
+        punto2_crossover = random.randint(0, punto_crossover_max//codones_por_kernel)
 
 
         while punto1_crossover == punto2_crossover:
-            punto2_crossover = random.randint(1, punto_crossover_max//codones_por_kernel)
+            punto2_crossover = random.randint(0, punto_crossover_max//codones_por_kernel)
         if punto2_crossover < punto1_crossover:
             aux = punto1_crossover
             punto1_crossover = punto2_crossover
@@ -239,8 +243,11 @@ class Individuo(object):
         :return:
         """
 
-        long_padre1 = padres[0].codones_usados // codones_por_kernel
-        long_padre2 = padres[1].codones_usados // codones_por_kernel
+        long_padre1 = len(padres[0].get_genotipo())
+        long_padre2 = len(padres[1].get_genotipo())
+
+        # long_padre1 = padres[0].codones_usados // codones_por_kernel
+        # long_padre2 = padres[1].codones_usados // codones_por_kernel
         long_vector_decision = max(long_padre1, long_padre2)
         genotipo_mas_corto = min(long_padre1, long_padre2)
         # Reordenación de los padres de acuerdo a la longitud de su genotipo usado
@@ -255,7 +262,7 @@ class Individuo(object):
         vector_decision = np.random.rand(long_vector_decision)
         h1 = np.array([])
         h2 = np.array([])
-        print(vector_decision)
+        #print(vector_decision) # todo: quitar
         for i in range(long_vector_decision):
             if i < genotipo_mas_corto:
                 if vector_decision[i] < umbral:

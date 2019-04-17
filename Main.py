@@ -12,23 +12,23 @@ from Individuo import Individuo
 """ --------------------------------------------------------------------------
                                 Parámetros
     -------------------------------------------------------------------------- """
-TAMANO_POBLACION = 2
-LONG_MAX_GENOTIPO = 45
+TAMANO_POBLACION = 400
+LONG_MAX_GENOTIPO = 240
 MAX_WRAPS = 2
 
 U = 0.1
 K0 = 1
 K1 = 10
 
-S = 0.5
+S = 1.8
 
 ARCHIVO_GRAMATICA = 'gramatica_nucleos.bnf'
 PROBLEMA_TIPO = 'Problema1'
 
-p_mutacion = 0.0001  # todo: decidir si es una constante o se usa en algo memético
+p_mutacion = 0.05  # todo: decidir si es una constante o se usa en algo memético
 
-NUM_EJECUCIONES = 10
-MAX_GENERACIONES = 3
+NUM_EJECUCIONES = 1
+MAX_GENERACIONES = 40
 """ --------------------------------------------------------------------------
                                 Funciones
     -------------------------------------------------------------------------- """
@@ -158,33 +158,22 @@ def evalua_poblacion(_poblacion, _target_fitness):
 def paso_generacional(_poblacion, prob_mutacion):
 
     tamano_poblacion = len(_poblacion)
-    # 1) Busqueda y selección
-    # TODO: Implemento solo SUS de momento. Opciones: if para elegir o \
-    # varias funciones paso_generacional
-
-    # 1.a) Asignación de las probabilidades de seleccion
-    _poblacion.sort()
-    pos = 0
-    acum = 0
-
-    for _elem in _poblacion:
-        _elem.set_prob_lin(pos, S, tamano_poblacion)
-        acum += _elem.get_prob_padre()
-        _elem.set_prob_padre_acumulada(acum)
-        pos += 1
 
     # 1.b) Selección de padres
+    # TODO: Implemento solo SUS de momento. Opciones: if para elegir o \
     lista_padres = seleccion_sus(_poblacion)
     # 2) Cruzes y mutaciones
     # TODO: De momento solo con cruze de 1punto fijo!!
     random.shuffle(lista_padres)  # Barajamos los padres --> cruze aleatorio
-    elite = max(_poblacion)  # Reservo el mejor de la población por si debemos aplicar elitismo
+    elite = min(_poblacion)  # Reservo el mejor de la población por si debemos aplicar elitismo
     hijos = []  # Reseteo de la población - aplicamos relevo generacional
 
     j = 0
     while j < (tamano_poblacion - 1):
         padres = [lista_padres[j], lista_padres[j+1]]
-        hijo1, hijo2 = Individuo.crossover_1pt_fijo(padres, codones_por_kernel=15)
+        #hijo1, hijo2 = Individuo.crossover_1pt_fijo(padres, codones_por_kernel=15)
+        #hijo1, hijo2 = Individuo.crossover_2pt_fijo(padres, codones_por_kernel=15) #todo: cambiado el tipo cruze
+        hijo1, hijo2 = Individuo.crossover_uniforme(padres, codones_por_kernel=15, umbral=0.5)
         hijos.append(hijo1)
         hijos.append(hijo2)
         # 3) Mutaciones
@@ -195,28 +184,60 @@ def paso_generacional(_poblacion, prob_mutacion):
         mapeo_y_fitness(hijos[j + 1], U, K0, K1, X_REF, Y_REF, M)
         j += 2
 
-    mejor_hijo = max(hijos)
+    peor_hijo = max(hijos)
+    if elite < peor_hijo:
+        hijos.remove(peor_hijo)
+        hijos.append(elite)
 
-    if elite > mejor_hijo:
-        peor_hijo = min(_poblacion)
-        _poblacion.remove(peor_hijo)
-        _poblacion.append(elite)
+    # 1) Ordenación por fitness y asignación de probabilidades de selección
+    # TODO: Implemento solo SUS de momento. Opciones: if para elegir o \
+    # varias funciones paso_generacional
+    # 1.a) Asignación de las probabilidades de seleccion
+    hijos.sort()
+    pos = 0
+    acum = 0
+
+    for _elem in hijos:
+        _elem.set_prob_lin(pos, S, tamano_poblacion)
+        acum += _elem.get_prob_padre()
+        _elem.set_prob_padre_acumulada(acum)
+        pos += 1
 
     return hijos
 
 
 def ejecucion(max_generaciones):
-    _primer_hit = None
+    _primer_hit = False
     estadisticas = []
     poblacion_actual = []
     for _ in range(TAMANO_POBLACION):
         poblacion_actual.append(Individuo(longitud_max=LONG_MAX_GENOTIPO))
 
+    # ----------------------    GENERACIÓN CERO    -------------------------
+    # 1) Ordenación por fitness y asignación de probabilidades de selección
+    # TODO: Implemento solo SUS de momento. Opciones: if para elegir o \
+    # varias funciones paso_generacional
+    # 1.a) Asignación de las probabilidades de seleccion
+    poblacion_actual.sort()
+    pos = 0
+    acum = 0
+
+    for _elem in poblacion_actual:
+        _elem.set_prob_lin(pos, S, TAMANO_POBLACION)
+        acum += _elem.get_prob_padre()
+        _elem.set_prob_padre_acumulada(acum)
+        pos += 1
+
+    estadistica_actual = evalua_poblacion(poblacion_actual, TARGET_FITNESS)
+    estadisticas.append(estadistica_actual)
+    # ---------------------------------------------------------------------
     num_generacion = 1
     while num_generacion < max_generaciones:
         nueva_generacion = paso_generacional(poblacion_actual, p_mutacion)
+        poblacion_actual = nueva_generacion
+        #print("\n\n", min(nueva_generacion)) # todo: A quitar
         estadistica_actual = evalua_poblacion(nueva_generacion, TARGET_FITNESS)
-        if (estadistica_actual[0] is True) and (_primer_hit is None):
+        if (estadistica_actual[0] is True) and (_primer_hit is False):
             _primer_hit = num_generacion
         estadisticas.append(estadistica_actual)
         num_generacion += 1
@@ -246,12 +267,12 @@ for i in range(NUM_EJECUCIONES):
     # print("ejecucion número: ", i)  todo: A quitar
     start = time.time()
     primer_hit, estad_ejecucion = ejecucion(MAX_GENERACIONES)
-    if primer_hit is not None:
+    if primer_hit is not False:
         AES += primer_hit * TAMANO_POBLACION
-        SR += 1
     end = time.time()
-    print("Tiempo requerido: %s" % (end-start))
     ejecuciones.append(estad_ejecucion)
+
+print("Tiempo requerido: %s" % (end-start))
 
 AES /= NUM_EJECUCIONES
 SR = (100*SR) / NUM_EJECUCIONES
@@ -261,6 +282,224 @@ print("El AES obtenido es:", AES)
 print("El SR (Success Rate) obtenido es: " + str(SR) + "%")
 
 ejecuciones = np.asarray(ejecuciones)   # Typecast como np array para facilitar los cálculos de las estadísticas
+
+
+'''
+#####################################################################################################
+# Obtener parámetros de la lista de parámetros para usar en los plots y cálculo de estadísticas
+#####################################################################################################
+#num_generaciones = int(lista_param[18]) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+num_generaciones = ex.max_generaciones
+tipo_funcion = ex.tipo_funcion
+x_i = ex.x_i
+x_f = ex.x_f
+num_muestras = ex.num_muestras
+kernels = ex.kernels
+#tipo_funcion = lista_param[1]
+#x_i = float(lista_param[6])
+#x_f = float(lista_param[7])
+#num_muestras = int(lista_param[8])
+#kernels = int(lista_param[5])
+
+'''
+
+
+####################################################################################################
+# 1. Cálculo del MBF
+# 2. Plot la mejor aproximación
+# Nota: como mejor individuo por ejecución escojo el mejor de la última generación (excepto en algún caso
+# raro y aparente además, como por ejemplo con selección (lambda, mu) y pocas generaciones será correcto)
+####################################################################################################
+
+def chinpun(_ejecuciones):
+    MBF = _ejecuciones[0, MAX_GENERACIONES - 1, 3]
+    mejor_individuo = _ejecuciones[0, MAX_GENERACIONES - 1, 1]
+    fitness_candidato = _ejecuciones[0, MAX_GENERACIONES - 1, 3]
+    print("Mejor individuo propuesto:\n", mejor_individuo)
+    #input()
+
+    i = 1
+    while i < NUM_EJECUCIONES:
+        MBF += _ejecuciones[i, MAX_GENERACIONES - 1, 3]
+        if _ejecuciones[i, MAX_GENERACIONES - 1, 3] < fitness_candidato:
+            mejor_individuo = _ejecuciones[i, MAX_GENERACIONES - 1, 1]
+        i += 1
+    MBF /= NUM_EJECUCIONES
+    print("El MBF obtenido es: ", MBF)
+    print("El mejor individuo es:", mejor_individuo)
+    #input()
+
+#   -------------   Gráfico con la mejor aproximación ---------------
+    fig, ax = plt.subplots()
+
+    line1, = ax.plot(X_REF, Y_REF, label=PROBLEMA_TIPO)
+    print("\n\nEl fenotipo del mejor individuo que vamos a evaluar es:\n", mejor_individuo.get_fenotipo())
+    #input("Pulsa enter para continuar")
+    line2, = ax.plot(X_REF, evaluar_fenotipo(mejor_individuo, X_REF),
+                     "o", label='Mejor individuo')
+
+    ax.set_xlim([min(X_REF), max(X_REF)])
+
+    ax.set_title("Función objetivo y aproximación")
+    ax.set_xlabel("x")
+    ax.set_ylabel("f(x)")
+    ax.grid()
+
+    ax.legend()
+    plt.show()
+    return
+
+chinpun(ejecuciones)
+
+################################## CALCULO DE ESTADÍSTICAS ###################################################
+vector_hits = ejecuciones[:, :, 0]  # donde cada elem del vector corresponde a una ejecución del experimento
+vector_mejores = ejecuciones[:, :, 1]
+vector_medias_fitness = ejecuciones[:, :, 2]
+vector_mejor_fitness = ejecuciones[:, :, 3]
+vector_peor_fitness = ejecuciones[:, :, 4]
+vector_desviacion = ejecuciones[:, :, 5]
+
+media_medias_fitness = np.average(vector_medias_fitness, 0)
+media_mejor_fitness = np.average(vector_mejor_fitness, 0)  # Mean Best fitness
+media_peor_fitness = np.average(vector_peor_fitness, 0)
+media_desviacion = np.average(vector_desviacion, 0)
+
+mejor_mejores_fitness = np.amin(vector_mejor_fitness, 0)  # Best ever case per generation
+peor_peores_fitness = np.amax(vector_peor_fitness, 0)  # Worst ever case per generation
+
+#####################################################################################################
+############################### PLOTS DE PROGRESO O CONVERGENCIA   ##################################
+#####################################################################################################
+
+###########################  Medias del fitness por generación    ###################################
+x = np.arange(MAX_GENERACIONES)
+fig, ax = plt.subplots()
+
+line1 = ax.plot(x, media_medias_fitness, label='Media del fitness')
+line2 = ax.plot(x, media_mejor_fitness, label='Media del mejor')
+# line3 = ax.plot(x, mejor_mejores_fitness, label='Mejores individuo')
+# line4 = ax.plot(x, peor_peores_fitness, label='Peores individuos')
+line5 = ax.plot(x, media_peor_fitness, label='Media del peor')
+
+ax.set_ylim([0.001, 10])
+ax.set_xlim([0, MAX_GENERACIONES])
+
+ax.set_title("Medias de los fitness por generacion")
+ax.set_xlabel("Generacion")
+ax.set_ylabel("Valor del error")
+
+ax.set_yscale('log')
+
+ax.grid(True)
+ax.legend()
+plt.show()
+
+#########################  Variación máxima del fitness por generación  ###############################
+fig, ax = plt.subplots()
+
+# line1 = ax.plot(x, media_medias_fitness, label='Media del fitness')
+line2 = ax.plot(x, media_mejor_fitness, label='Media del mejor')
+line3 = ax.plot(x, mejor_mejores_fitness, label='Mejores individuo')
+line4 = ax.plot(x, peor_peores_fitness, label='Peores individuos')
+# line5 = ax.plot(x, media_peor_fitness, label='Media del peor')
+
+ax.set_ylim([0.001, 10])
+ax.set_xlim([0, MAX_GENERACIONES])
+
+ax.set_title("Variación máxima del fitness por generación")
+ax.set_xlabel("Generacion")
+ax.set_ylabel("Valor del error")
+
+ax.set_yscale('log')
+
+ax.grid(True)
+ax.legend()
+plt.show()
+
+##################  Media de la desviación típica del fitness por generación  #########################
+fig, ax = plt.subplots()
+
+line1 = ax.plot(x, media_desviacion, label='Media de la desviacion típica')
+
+ax.set_ylim([0.0001, 0.1])
+ax.set_xlim([0, MAX_GENERACIONES])
+
+ax.set_title("Media de la desviación típica de la función de error")
+ax.set_xlabel("Generacion")
+ax.set_ylabel("Valor del error")
+
+ax.set_yscale('log')
+
+ax.grid(True)
+ax.legend()
+plt.show()
+
+##################  Mejor fitness por generación de cada ejecución  #########################
+fig, ax = plt.subplots()
+
+for i in range(MAX_GENERACIONES):
+    ej_mejor_fitness = ejecuciones[i, :, 3]
+    etiqueta = str("Run %i" % i)
+    line1 = ax.plot(x, ej_mejor_fitness, label=etiqueta)
+
+ax.set_ylim([0.001, 10])
+ax.set_xlim([0, MAX_GENERACIONES])
+
+ax.set_title("Mejor fitness por generacion")
+ax.set_xlabel("Generacion")
+ax.set_ylabel("Valor del error")
+
+ax.set_yscale('log')
+
+ax.grid(True)
+ax.legend()
+plt.show()
+
+# print(ejecuciones)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # poblacion = []

@@ -172,9 +172,9 @@ def paso_generacional(_poblacion, prob_mutacion):
     j = 0
     while j < (tamano_poblacion - 1):
         padres = [lista_padres[j], lista_padres[j+1]]
-        #hijo1, hijo2 = Individuo.crossover_1pt_fijo(padres, codones_por_kernel=15)
-        #hijo1, hijo2 = Individuo.crossover_2pt_fijo(padres, codones_por_kernel=15) #todo: cambiado el tipo cruze
-        hijo1, hijo2 = Individuo.crossover_uniforme(padres, codones_por_kernel=15, umbral=0.5)
+        hijo1, hijo2 = Individuo.crossover_1pt_fijo(padres, codones_por_kernel=15)
+        # hijo1, hijo2 = Individuo.crossover_2pt_fijo(padres, codones_por_kernel=15) #todo: cambiado el tipo cruze
+        # hijo1, hijo2 = Individuo.crossover_uniforme(padres, codones_por_kernel=15, umbral=0.5)
         hijos.append(hijo1)
         hijos.append(hijo2)
         # 3) Mutaciones
@@ -208,13 +208,28 @@ def paso_generacional(_poblacion, prob_mutacion):
 
 
 def ejecucion(max_generaciones):
+    """
+1. Inicializa población: genera individuos, mapea a fenotipos, ordena
+y asigna probabilidades de selección
+2. Bucle generacional: Itera max_generaciones el proceso
+(función paso_generacional)
+
+    :param max_generaciones:
+    :return:
+    '''
+    '''
+    :param max_generaciones:
+    :return: _primer_hit (generación que consiguió un "Hit completo" o False si
+no alcanzó), estadisticas de cada generación
+    """
     _primer_hit = False
     estadisticas = []
     poblacion_actual = []
+    # TODO: Implementar Ramp half-and-half
     for _ in range(TAMANO_POBLACION):
         poblacion_actual.append(Individuo(longitud_max=LONG_MAX_GENOTIPO))
 
-    # ----------------------    GENERACIÓN CERO    -------------------------
+    # -------------------    Inicializa población    -------------------------
     # 1) Ordenación por fitness y asignación de probabilidades de selección
     # TODO: Implemento solo SUS de momento. Opciones: if para elegir o \
     # varias funciones paso_generacional
@@ -231,12 +246,12 @@ def ejecucion(max_generaciones):
 
     estadistica_actual = evalua_poblacion(poblacion_actual, TARGET_FITNESS)
     estadisticas.append(estadistica_actual)
-    # ---------------------------------------------------------------------
+    # ----------------- Bucle generacional  ----------------------------------
     num_generacion = 1
     while num_generacion < max_generaciones:
         nueva_generacion = paso_generacional(poblacion_actual, p_mutacion)
         poblacion_actual = nueva_generacion
-        #print("\n\n", min(nueva_generacion)) # todo: A quitar
+        # print("\n\n", min(nueva_generacion)) # todo: A quitar
         estadistica_actual = evalua_poblacion(nueva_generacion, TARGET_FITNESS)
         if (estadistica_actual[0] is True) and (_primer_hit is False):
             _primer_hit = num_generacion
@@ -246,9 +261,12 @@ def ejecucion(max_generaciones):
 
 
 """ --------------------------------------------------------------------------
+                        EJECUCIÓN DEL EXPERIMENTO      
+    __________________________________________________________________________
   1. Lee Gramática
   2. Genera referencias para el cálculo de fitness según el tipo de problema
-  3. Inicializa población:    
+  3. Fija un target fitness
+  4. Inicializa población:    
       3.1 Genera individuos
       3.2 Mapea a fenotipos
                                                                                 
@@ -291,7 +309,7 @@ while i < NUM_EJECUCIONES:
 MBF /= NUM_EJECUCIONES
 
 # Muestra resultados
-print("Tiempo requerido: %s" % (end-start))
+print("Tiempo requerido: %s" % (end - start))
 print("\nNumero de ""runs"": ", NUM_EJECUCIONES)
 print("Usando como criterio de exito un valor de fitness máximo =", TARGET_FITNESS)
 print("El AES obtenido es:", AES)
@@ -347,7 +365,3 @@ graf.graf_delta_fitess_por_generacion(MAX_GENERACIONES, media_mejor_fitness,
 graf.graf_media_desviacion_por_generacion(MAX_GENERACIONES, media_desviacion)
 
 graf.graf_mejor_fitness_por_generacion(MAX_GENERACIONES, ejecuciones, NUM_EJECUCIONES)
-
-
-
-

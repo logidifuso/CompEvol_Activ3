@@ -113,13 +113,25 @@ def seleccion_sus(_poblacion):
     """
     Selección de padres usando el algoritmo estocástico universal (SUS)
     :param _poblacion:
-    :return:
+    :return: lista_padres
     """
+    validos = [_i for _i in _poblacion
+               if _i.get_genotipo() is not None]
+    validos.sort()
+    pos = 0
+    acum = 0
+
+    for _elem in validos:
+        _elem.set_prob_lin(pos, S, len(validos))
+        acum += _elem.get_prob_padre()
+        _elem.set_prob_padre_acumulada(acum)
+        pos += 1
+
     seleccion_padres = 0
     tamano_poblacion = len(_poblacion)
     # En nuestro caso lamdda = al tamanno de la población,
     # pero dejo la variable para posibles futuros experimentos
-    lambda_padres = tamano_poblacion
+    lambda_padres = len(validos)
     indice = 0
     r = np.random.uniform(0, 1/lambda_padres)
     lista_padres = []
@@ -133,10 +145,29 @@ def seleccion_sus(_poblacion):
     return lista_padres
 
 
-def seleccion_torneo(_poblacion):
-    # TODO: Implementar la selección por torneo. Referencia ponyge2
-    aux = _poblacion
-    return aux
+def seleccion_torneo(_poblacion, tamano_torneo):
+    """
+    Dada una población, realiza una selección por torneos, retornando
+    a los vencedores. Sólamente individuos válidos pueden ser seleccionados
+    :param _poblacion:
+    :param tamano_torneo: número de oponentes en cada torneo
+    :param
+    :return: ganadores: lista de los vencedores de los torneos.
+    """
+    # TODO: Ponyge2 da la opción de poder seleccionar indiv no válidos (flag:Invalid selection) --> tú también?
+    seleccion_padres = 0
+    tamano_poblacion = len(_poblacion)
+    # En nuestro caso lamdda = al tamanno de la población,
+    # pero dejo la variable para posibles futuros experimentos
+    lambda_padres = tamano_poblacion
+    indice = 0
+    ganadores = []
+    validos = [_i for _i in _poblacion
+               if _i.get_genotipo() is not None]
+    while seleccion_padres < lambda_padres:
+        oponentes = random.sample(validos, tamano_torneo)
+        ganadores.append(min(oponentes))
+    return ganadores
 
 
 def evalua_poblacion(_poblacion, _target_fitness):

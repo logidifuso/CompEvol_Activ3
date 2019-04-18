@@ -13,7 +13,7 @@ import graficos_progreso as graf
 """ --------------------------------------------------------------------------
                                 Parámetros
     -------------------------------------------------------------------------- """
-TAMANO_POBLACION = 400
+TAMANO_POBLACION = 1000
 LONG_MAX_GENOTIPO = 240
 MAX_WRAPS = 2
 
@@ -27,9 +27,11 @@ ARCHIVO_GRAMATICA = 'gramatica_nucleos.bnf'
 PROBLEMA_TIPO = 'Problema1'
 
 p_mutacion = 0.05  # todo: decidir si es una constante o se usa en algo memético
+OPCION_SELECCION = "Torneo"
+TAMANO_TORNEO = 2
 
 NUM_EJECUCIONES = 1
-MAX_GENERACIONES = 4
+MAX_GENERACIONES = 40
 """ --------------------------------------------------------------------------
                                 Funciones
     -------------------------------------------------------------------------- """
@@ -160,13 +162,14 @@ def seleccion_torneo(_poblacion, tamano_torneo):
     # En nuestro caso lamdda = al tamanno de la población,
     # pero dejo la variable para posibles futuros experimentos
     lambda_padres = tamano_poblacion
-    indice = 0
     ganadores = []
     validos = [_i for _i in _poblacion
-               if _i.get_genotipo() is not None]
+               if _i.get_fenotipo() is not None]
+
     while seleccion_padres < lambda_padres:
         oponentes = random.sample(validos, tamano_torneo)
         ganadores.append(min(oponentes))
+        seleccion_padres += 1
     return ganadores
 
 
@@ -187,13 +190,16 @@ def evalua_poblacion(_poblacion, _target_fitness):
     return hit, mejor_indiv, media_fitness, mejor, peor, desviacion
 
 
-def paso_generacional(_poblacion, prob_mutacion):
+def paso_generacional(_poblacion, prob_mutacion, opc_seleccion):
 
     tamano_poblacion = len(_poblacion)
 
     # 1.b) Selección de padres
     # TODO: Implemento solo SUS de momento. Opciones: if para elegir o \
-    lista_padres = seleccion_sus(_poblacion)
+    if opc_seleccion == "Torneo":
+        lista_padres = seleccion_torneo(_poblacion, TAMANO_TORNEO)
+    else:
+        lista_padres = seleccion_sus(_poblacion)
     # 2) Cruzes y mutaciones
     # TODO: De momento solo con cruze de 1punto fijo!!
     random.shuffle(lista_padres)  # Barajamos los padres --> cruze aleatorio
@@ -221,6 +227,7 @@ def paso_generacional(_poblacion, prob_mutacion):
         hijos.remove(peor_hijo)
         hijos.append(elite)
 
+    '''
     # 1) Ordenación por fitness y asignación de probabilidades de selección
     # TODO: Implemento solo SUS de momento. Opciones: if para elegir o \
     # varias funciones paso_generacional
@@ -228,12 +235,14 @@ def paso_generacional(_poblacion, prob_mutacion):
     hijos.sort()
     pos = 0
     acum = 0
-
+    
     for _elem in hijos:
         _elem.set_prob_lin(pos, S, tamano_poblacion)
         acum += _elem.get_prob_padre()
         _elem.set_prob_padre_acumulada(acum)
         pos += 1
+        
+    '''
 
     return hijos
 
@@ -258,7 +267,9 @@ no alcanzó), estadisticas de cada generación
     poblacion_actual = []
     # TODO: Implementar Ramp half-and-half
     for _ in range(TAMANO_POBLACION):
-        poblacion_actual.append(Individuo(longitud_max=LONG_MAX_GENOTIPO))
+        nuevo_individuo = Individuo(longitud_max=LONG_MAX_GENOTIPO)
+        mapeo_y_fitness(nuevo_individuo, U, K0, K1, X_REF, Y_REF, M)
+        poblacion_actual.append(nuevo_individuo)
 
     # -------------------    Inicializa población    -------------------------
     # 1) Ordenación por fitness y asignación de probabilidades de selección
@@ -280,7 +291,7 @@ no alcanzó), estadisticas de cada generación
     # ----------------- Bucle generacional  ----------------------------------
     num_generacion = 1
     while num_generacion < max_generaciones:
-        nueva_generacion = paso_generacional(poblacion_actual, p_mutacion)
+        nueva_generacion = paso_generacional(poblacion_actual, p_mutacion, OPCION_SELECCION)
         poblacion_actual = nueva_generacion
         # print("\n\n", min(nueva_generacion)) # todo: A quitar
         estadistica_actual = evalua_poblacion(nueva_generacion, TARGET_FITNESS)
@@ -308,6 +319,19 @@ gramatica_bnf = interprete_gramatica.Gramatica(ARCHIVO_GRAMATICA)
 X_REF, Y_REF, M = muestras_de_referencia(PROBLEMA_TIPO)
 TARGET_FITNESS = K0 * U  # TODO: OJO!!! que esto no garantiza un hit completo
 # TODO: Podria ser que todos los errores fueran 0 y uno "grande"
+
+'''
+TESTEO
+
+genotipo_testeo = [208, 164, 238,  70,  73,
+                   52,  60, 202,  22, 157,
+                   63, 190, 157, 179, 238,
+                   48]
+testeo = Individuo(genotipo_testeo)
+mapeo_y_fitness(testeo, U, K0, K1, X_REF, Y_REF, M)
+print(testeo)
+input("chimpún!!!")
+'''
 
 
 ejecuciones = []

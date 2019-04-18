@@ -1,8 +1,8 @@
 from Individuo import Individuo
 from parametros import params
 import random
-'''
-def inicia_rhh(_tamano_poblacion, min_long_fenotipo, max_long_fenotipo, codones_kernel = 15):
+
+def inicia_rhh(_tamano_poblacion, min_long_fenotipo, max_long_fenotipo):
     """
     Crea una población del tamanno '_tamano_poblacion' usando el algoritmo ramped
     half-and-half
@@ -41,10 +41,23 @@ def inicia_rhh(_tamano_poblacion, min_long_fenotipo, max_long_fenotipo, codones_
             indiv = genera_indiv_full(longitud)
             poblacion.append(indiv)
 
+    if resto: # si aún no se ha llegado a completar la población deseada
+        longitudes_fenotipos = list(longitudes_fenotipos)
+        random.shuffle(longitudes_fenotipos)
+
+    for i in range(resto):
+        longitud = longitudes_fenotipos.pop()
+
+        indiv = genera_indiv_aleat(longitud)
+        poblacion.append(indiv)
+
+        indiv = genera_indiv_full(longitud)
+        poblacion.append(indiv)
+
     return poblacion
 
-'''
-def genera_indiv_full(longitud_fenotipo, codones_kernel = 15, expresiones = [1, 3, 5]):
+
+def genera_indiv_full(longitud_fenotipo, codones_kernel=15, expresiones=[1, 3, 5]):
     genotipo = []
     for i in range(longitud_fenotipo * codones_kernel):
         if i % codones_kernel == 0:
@@ -56,10 +69,12 @@ def genera_indiv_full(longitud_fenotipo, codones_kernel = 15, expresiones = [1, 
 
     return genotipo
 
-def genera_indiv_aleat(longitud_fenotipo, codones_kernel = 15, expresiones = [1, 3, 5])
+
+def genera_indiv_aleat(longitud_fenotipo, codones_kernel = 15):
     genotipo = [random.randint(0, Individuo.MAX_VAL_CODON)
                  for _ in range(random.randint(longitud_fenotipo*codones_kernel,
                                                params['LONG_MAX_GENOTIPO']))]
+    return genotipo
 
 
 

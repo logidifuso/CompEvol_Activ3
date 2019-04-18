@@ -8,6 +8,7 @@ import csv
 import matplotlib.pyplot as plt
 import interprete_gramatica
 from Individuo import Individuo
+import graficos_progreso as graf
 
 """ --------------------------------------------------------------------------
                                 Parámetros
@@ -28,7 +29,7 @@ PROBLEMA_TIPO = 'Problema1'
 p_mutacion = 0.05  # todo: decidir si es una constante o se usa en algo memético
 
 NUM_EJECUCIONES = 1
-MAX_GENERACIONES = 40
+MAX_GENERACIONES = 4
 """ --------------------------------------------------------------------------
                                 Funciones
     -------------------------------------------------------------------------- """
@@ -284,26 +285,6 @@ print("El SR (Success Rate) obtenido es: " + str(SR) + "%")
 ejecuciones = np.asarray(ejecuciones)   # Typecast como np array para facilitar los cálculos de las estadísticas
 
 
-'''
-#####################################################################################################
-# Obtener parámetros de la lista de parámetros para usar en los plots y cálculo de estadísticas
-#####################################################################################################
-#num_generaciones = int(lista_param[18]) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-num_generaciones = ex.max_generaciones
-tipo_funcion = ex.tipo_funcion
-x_i = ex.x_i
-x_f = ex.x_f
-num_muestras = ex.num_muestras
-kernels = ex.kernels
-#tipo_funcion = lista_param[1]
-#x_i = float(lista_param[6])
-#x_f = float(lista_param[7])
-#num_muestras = int(lista_param[8])
-#kernels = int(lista_param[5])
-
-'''
-
-
 ####################################################################################################
 # 1. Cálculo del MBF
 # 2. Plot la mejor aproximación
@@ -311,45 +292,21 @@ kernels = ex.kernels
 # raro y aparente además, como por ejemplo con selección (lambda, mu) y pocas generaciones será correcto)
 ####################################################################################################
 
-def chinpun(_ejecuciones):
-    MBF = _ejecuciones[0, MAX_GENERACIONES - 1, 3]
-    mejor_individuo = _ejecuciones[0, MAX_GENERACIONES - 1, 1]
-    fitness_candidato = _ejecuciones[0, MAX_GENERACIONES - 1, 3]
-    print("Mejor individuo propuesto:\n", mejor_individuo)
-    #input()
+MBF = ejecuciones[0, MAX_GENERACIONES - 1, 3]
+mejor_individuo = ejecuciones[0, MAX_GENERACIONES - 1, 1]
+fitness_candidato = ejecuciones[0, MAX_GENERACIONES - 1, 3]
+print("Mejor individuo propuesto:\n", mejor_individuo)
+# input()
 
-    i = 1
-    while i < NUM_EJECUCIONES:
-        MBF += _ejecuciones[i, MAX_GENERACIONES - 1, 3]
-        if _ejecuciones[i, MAX_GENERACIONES - 1, 3] < fitness_candidato:
-            mejor_individuo = _ejecuciones[i, MAX_GENERACIONES - 1, 1]
-        i += 1
-    MBF /= NUM_EJECUCIONES
-    print("El MBF obtenido es: ", MBF)
-    print("El mejor individuo es:", mejor_individuo)
-    #input()
-
-#   -------------   Gráfico con la mejor aproximación ---------------
-    fig, ax = plt.subplots()
-
-    line1, = ax.plot(X_REF, Y_REF, label=PROBLEMA_TIPO)
-    print("\n\nEl fenotipo del mejor individuo que vamos a evaluar es:\n", mejor_individuo.get_fenotipo())
-    #input("Pulsa enter para continuar")
-    line2, = ax.plot(X_REF, evaluar_fenotipo(mejor_individuo, X_REF),
-                     "o", label='Mejor individuo')
-
-    ax.set_xlim([min(X_REF), max(X_REF)])
-
-    ax.set_title("Función objetivo y aproximación")
-    ax.set_xlabel("x")
-    ax.set_ylabel("f(x)")
-    ax.grid()
-
-    ax.legend()
-    plt.show()
-    return
-
-chinpun(ejecuciones)
+i = 1
+while i < NUM_EJECUCIONES:
+    MBF += ejecuciones[i, MAX_GENERACIONES - 1, 3]
+    if ejecuciones[i, MAX_GENERACIONES - 1, 3] < fitness_candidato:
+        mejor_individuo = ejecuciones[i, MAX_GENERACIONES - 1, 1]
+    i += 1
+MBF /= NUM_EJECUCIONES
+print("El MBF obtenido es: ", MBF)
+print("El mejor individuo es:", mejor_individuo)
 
 ################################## CALCULO DE ESTADÍSTICAS ###################################################
 vector_hits = ejecuciones[:, :, 0]  # donde cada elem del vector corresponde a una ejecución del experimento
@@ -367,207 +324,43 @@ media_desviacion = np.average(vector_desviacion, 0)
 mejor_mejores_fitness = np.amin(vector_mejor_fitness, 0)  # Best ever case per generation
 peor_peores_fitness = np.amax(vector_peor_fitness, 0)  # Worst ever case per generation
 
-#####################################################################################################
-############################### PLOTS DE PROGRESO O CONVERGENCIA   ##################################
-#####################################################################################################
+mejor_individuo = ejecuciones[0, MAX_GENERACIONES - 1, 1]
 
-###########################  Medias del fitness por generación    ###################################
-x = np.arange(MAX_GENERACIONES)
-fig, ax = plt.subplots()
 
-line1 = ax.plot(x, media_medias_fitness, label='Media del fitness')
-line2 = ax.plot(x, media_mejor_fitness, label='Media del mejor')
-# line3 = ax.plot(x, mejor_mejores_fitness, label='Mejores individuo')
-# line4 = ax.plot(x, peor_peores_fitness, label='Peores individuos')
-line5 = ax.plot(x, media_peor_fitness, label='Media del peor')
 
-ax.set_ylim([0.001, 10])
-ax.set_xlim([0, MAX_GENERACIONES])
+def graf_mejor_aproximacion(x_ref, y_ref, problema_tipo, _mejor_individuo):
+    fig, ax = plt.subplots()
 
-ax.set_title("Medias de los fitness por generacion")
-ax.set_xlabel("Generacion")
-ax.set_ylabel("Valor del error")
+    line1, = ax.plot(x_ref, y_ref, label=problema_tipo)
+    # print("\n\nEl fenotipo del mejor individuo que vamos a evaluar es:\n", mejor_individuo.get_fenotipo())
+    # input("Pulsa enter para continuar")
+    line2, = ax.plot(x_ref, evaluar_fenotipo(_mejor_individuo, x_ref),
+                     "o", label='Mejor individuo')
 
-ax.set_yscale('log')
+    ax.set_xlim([min(x_ref), max(x_ref)])
 
-ax.grid(True)
-ax.legend()
-plt.show()
+    ax.set_title("Función objetivo y aproximación")
+    ax.set_xlabel("x")
+    ax.set_ylabel("f(x)")
+    ax.grid()
 
-#########################  Variación máxima del fitness por generación  ###############################
-fig, ax = plt.subplots()
+    ax.legend()
+    plt.show(block=False)
+    return
 
-# line1 = ax.plot(x, media_medias_fitness, label='Media del fitness')
-line2 = ax.plot(x, media_mejor_fitness, label='Media del mejor')
-line3 = ax.plot(x, mejor_mejores_fitness, label='Mejores individuo')
-line4 = ax.plot(x, peor_peores_fitness, label='Peores individuos')
-# line5 = ax.plot(x, media_peor_fitness, label='Media del peor')
 
-ax.set_ylim([0.001, 10])
-ax.set_xlim([0, MAX_GENERACIONES])
+graf_mejor_aproximacion(X_REF, Y_REF, PROBLEMA_TIPO, mejor_individuo)
 
-ax.set_title("Variación máxima del fitness por generación")
-ax.set_xlabel("Generacion")
-ax.set_ylabel("Valor del error")
+graf.graf_medias_fitness_por_generacion(MAX_GENERACIONES, media_medias_fitness,
+                                        media_mejor_fitness, media_peor_fitness)
 
-ax.set_yscale('log')
+graf.graf_delta_fitess_por_generacion(MAX_GENERACIONES, media_mejor_fitness,
+                                      mejor_mejores_fitness, peor_peores_fitness)
 
-ax.grid(True)
-ax.legend()
-plt.show()
+graf.graf_media_desviacion_por_generacion(MAX_GENERACIONES, media_desviacion)
 
-##################  Media de la desviación típica del fitness por generación  #########################
-fig, ax = plt.subplots()
+graf.graf_mejor_fitness_por_generacion(MAX_GENERACIONES, ejecuciones, NUM_EJECUCIONES)
 
-line1 = ax.plot(x, media_desviacion, label='Media de la desviacion típica')
 
-ax.set_ylim([0.0001, 0.1])
-ax.set_xlim([0, MAX_GENERACIONES])
 
-ax.set_title("Media de la desviación típica de la función de error")
-ax.set_xlabel("Generacion")
-ax.set_ylabel("Valor del error")
 
-ax.set_yscale('log')
-
-ax.grid(True)
-ax.legend()
-plt.show()
-
-##################  Mejor fitness por generación de cada ejecución  #########################
-fig, ax = plt.subplots()
-
-for i in range(MAX_GENERACIONES):
-    ej_mejor_fitness = ejecuciones[i, :, 3]
-    etiqueta = str("Run %i" % i)
-    line1 = ax.plot(x, ej_mejor_fitness, label=etiqueta)
-
-ax.set_ylim([0.001, 10])
-ax.set_xlim([0, MAX_GENERACIONES])
-
-ax.set_title("Mejor fitness por generacion")
-ax.set_xlabel("Generacion")
-ax.set_ylabel("Valor del error")
-
-ax.set_yscale('log')
-
-ax.grid(True)
-ax.legend()
-plt.show()
-
-# print(ejecuciones)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# poblacion = []
-# for _ in range(TAMANO_POBLACION):
-#    poblacion.append(Individuo(longitud_max=LONG_MAX_GENOTIPO))
-
-""" --------------------------------------------------------------------------
-                            Ciclo generacional
-    -------------------------------------------------------------------------- """
-
-'''
-print("\n\n\n\n")
-_hijos = paso_generacional(poblacion, p_mutacion)
-
-
-for elem in poblacion:
-    mapeo_y_fitness(elem, U, K0, K1, X_REF, Y_REF, M)
-    print("\n\nIndividuo:\n", elem)   # todo: quitar print
-
-for elem in _hijos:
-    print(elem)
-    print("\n")
-
-# for elem in hijos:
-#    print("\n\nIndividuo hijo:\n", elem)   # todo: quitar print
-'''
-
-'''
-GRAMMAR_FILE = 'gramatica_nucleos.bnf'
-# Read grammar
-bnf_grammar = interprete_gramatica.Gramatica(GRAMMAR_FILE)
-print(bnf_grammar)
-
-# Genoma para testear las funciones en la clase Gramatica
-genoma_prueba = [1, 0, 1, 2, 1, 3, 5, 6, 1, 9, 8, 9, 1, 2, 0, 3, \
-                 1, 3, 3, 0, 1, 8, 8, 1, 1, 7, 7, 1, 2, 1, 4, 0, \
-                 6, 6, 0, 2, 3, 3, 1, 8, 2, 2, 0, 1, 1]
-fenotipo, codones_usados = bnf_grammar.generate(genoma_prueba)
-
-
-# print("El número de codones usados ha sido: ", codones_usados)
-print("El fenotipo que ha quedado tras decodificar es:\n", fenotipo)
-
-exec(fenotipo, globals())
-# Rango de x a evaluar (vectorización de la evaluación de los puntos)
-x_test = np.arange(-1, 1, 0.5)
-print("Puntos de evaluación:", x_test)
-evaluacion = f(x_test)
-print("El resultado de la evaluación ha sido:\n", evaluacion)
-'''
-'''
-x_referencia = [-1.  -0.5  0.   0.5]#
-y_referencia 
-
-def calcula_fitness(individuo, U, K0, K1, x_referencia, y_referencia, m):
-'''
-'''
-x_ref = np.array([-1., -0.5, 0.,  0.5])
-y_ref = np.array([798.4012, 777.3312, 756.2612, 735.1912])
-
-indiv = Individuo(genoma_prueba)
-indiv.set_fenotipo(fenotipo)
-indiv.set_codones_usados(codones_usados)
-print(indiv)
-
-print("\n\n\n\n\n")
-
-fitness = calcula_fitness(indiv, U, K0, K1, x_ref, y_ref, m=3)
-
-print("El fitness calculado es:", fitness)
-'''

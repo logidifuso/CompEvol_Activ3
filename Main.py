@@ -9,11 +9,13 @@ import matplotlib.pyplot as plt
 import interprete_gramatica
 from Individuo import Individuo
 import graficos_progreso as graf
+from inicialización import inicia_rhh
+from parametros import params
 
 """ --------------------------------------------------------------------------
                                 Parámetros
     -------------------------------------------------------------------------- """
-TAMANO_POBLACION = 1000
+TAMANO_POBLACION = 5000
 LONG_MAX_GENOTIPO = 240
 MAX_WRAPS = 2
 
@@ -30,8 +32,8 @@ p_mutacion = 0.05  # todo: decidir si es una constante o se usa en algo memétic
 OPCION_SELECCION = "Torneo"
 TAMANO_TORNEO = 2
 
-NUM_EJECUCIONES = 1
-MAX_GENERACIONES = 40
+NUM_EJECUCIONES = 5
+MAX_GENERACIONES = 80
 """ --------------------------------------------------------------------------
                                 Funciones
     -------------------------------------------------------------------------- """
@@ -182,7 +184,7 @@ def evalua_poblacion(_poblacion, _target_fitness):
     mejor = min(fitnesses)
     # varianza = np.var(fitnesses)
     desviacion = np.std(fitnesses)
-    mejor_indiv = _poblacion[0]
+    mejor_indiv = min(_poblacion)   # _poblacion[0] :todo: correcto??
     if mejor <= _target_fitness:
         hit = True
     else:
@@ -227,6 +229,7 @@ def paso_generacional(_poblacion, prob_mutacion, opc_seleccion):
         hijos.remove(peor_hijo)
         hijos.append(elite)
 
+
     '''
     # 1) Ordenación por fitness y asignación de probabilidades de selección
     # TODO: Implemento solo SUS de momento. Opciones: if para elegir o \
@@ -264,12 +267,20 @@ no alcanzó), estadisticas de cada generación
     """
     _primer_hit = False
     estadisticas = []
-    poblacion_actual = []
+    #poblacion_actual = []
     # TODO: Implementar Ramp half-and-half
+    poblacion_actual = inicia_rhh(params['TAMANO_POBLACION'],
+                                  params['MIN_LONG_FENOTIPO_INICIAL'],
+                                  params['MAX_LONG_FENOTIPO_INICIAL'])
+    for indiv in poblacion_actual:
+        mapeo_y_fitness(indiv, params['U'], params['K0'],
+                        params['K1'], X_REF, Y_REF, M)
+    '''
     for _ in range(TAMANO_POBLACION):
         nuevo_individuo = Individuo(longitud_max=LONG_MAX_GENOTIPO)
         mapeo_y_fitness(nuevo_individuo, U, K0, K1, X_REF, Y_REF, M)
         poblacion_actual.append(nuevo_individuo)
+    '''
 
     # -------------------    Inicializa población    -------------------------
     # 1) Ordenación por fitness y asignación de probabilidades de selección
@@ -320,6 +331,14 @@ X_REF, Y_REF, M = muestras_de_referencia(PROBLEMA_TIPO)
 TARGET_FITNESS = K0 * U  # TODO: OJO!!! que esto no garantiza un hit completo
 # TODO: Podria ser que todos los errores fueran 0 y uno "grande"
 
+'''
+poblacion_test = inicia_rhh(8, 2, 4)
+for el in poblacion_test:
+    mapeo_y_fitness(el,U, K0, K1, X_REF, Y_REF, M)
+    print("\n", el)
+
+input("A ver si salió...")
+'''
 '''
 TESTEO
 

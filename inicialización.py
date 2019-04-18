@@ -1,16 +1,17 @@
+from Individuo import Individuo
+import random
 
-
-def inicia_rhh(_tamano_poblacion, min_ramp, long_max_genotipo):
+def inicia_rhh(_tamano_poblacion, min_long_fenotipo, max_long_fenotipo, codones_kernel = 15):
     """
     Crea una población del tamanno '_tamano_poblacion' usando el algoritmo ramped
     half-and-half
     :param _tamano_poblacion: Debe ser un número par, sino, se annadirá 1
-    :param min_ramp
-    :param long_max_genotipo
+    :param min_long_fenotipo
+    :param max_long_fenotipo
     :return: La población de individuos generada
     """
 
-    longitudes_fenotipos = range(min_ramp+1, long_max_genotipo+1)
+    longitudes_fenotipos = range(min_long_fenotipo + 1, max_long_fenotipo + 1)
 
     poblacion = []
 
@@ -42,4 +43,14 @@ def inicia_rhh(_tamano_poblacion, min_ramp, long_max_genotipo):
     return poblacion
 
 
+def genera_indiv_full(longitud_fenotipo, codones_kernel = 15, expresiones = [1, 3, 5]):
+    genotipo = []
+    for i in range(longitud_fenotipo * codones_kernel):
+        if i % codones_kernel == 0:
+            genotipo.append(random.choice(expresiones))
+        #elif --> Condiciones para exponentes son posibles, p.e.
+        else:
+            genotipo.append(random.randint(10, 20))
 
+
+test = genera_indiv_full(5, 3)

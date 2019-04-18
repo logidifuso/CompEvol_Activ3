@@ -1,4 +1,5 @@
 from Individuo import Individuo
+from parametros import params
 import random
 '''
 def inicia_rhh(_tamano_poblacion, min_long_fenotipo, max_long_fenotipo, codones_kernel = 15):
@@ -58,7 +59,7 @@ def genera_indiv_full(longitud_fenotipo, codones_kernel = 15, expresiones = [1, 
 def genera_indiv_aleat(longitud_fenotipo, codones_kernel = 15, expresiones = [1, 3, 5])
     genotipo = [random.randint(0, Individuo.MAX_VAL_CODON)
                  for _ in range(random.randint(longitud_fenotipo*codones_kernel,
-                                               LONG_MAX_GENOTIPO))]
+                                               params['LONG_MAX_GENOTIPO']))]
 
 
 

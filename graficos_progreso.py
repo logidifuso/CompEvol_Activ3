@@ -1,10 +1,5 @@
-import random
 import numpy as np
-import time
-import csv
 import matplotlib.pyplot as plt
-import interprete_gramatica
-from Individuo import Individuo
 
 
 def graf_mejor_aproximacion(x_ref, y_ref, problema_tipo):
@@ -28,11 +23,11 @@ def graf_mejor_aproximacion(x_ref, y_ref, problema_tipo):
     return
 
 
-# ####################################################################################################
-# ############################## PLOTS DE PROGRESO O CONVERGENCIA   ##################################
-#####################################################################################################
+# #############################################################################
+# ############### PLOTS DE PROGRESO O CONVERGENCIA   ##########################
+###############################################################################
 
-# ##########################  Medias del fitness por generación    ###################################
+# Medias del fitness por generación
 def graf_medias_fitness_por_generacion(max_generaciones, _media_medias_fitness,
                                        _media_mejor_fitness, _media_peor_fitness):
     x = np.arange(max_generaciones)
@@ -59,7 +54,7 @@ def graf_medias_fitness_por_generacion(max_generaciones, _media_medias_fitness,
     return
 
 
-# ########################  Variación máxima del fitness por generación  ###############################
+# Variación máxima del fitness por generación
 def graf_delta_fitess_por_generacion(max_generaciones, _media_mejor_fitness,
                                      _mejor_mejores_fitness, _peor_peores_fitness):
     x = np.arange(max_generaciones)
@@ -86,7 +81,7 @@ def graf_delta_fitess_por_generacion(max_generaciones, _media_mejor_fitness,
     return
 
 
-# #################  Media de la desviación típica del fitness por generación  #########################
+# Media de la desviación típica del fitness por generación
 def graf_media_desviacion_por_generacion(max_generaciones, _media_desviacion):
     x = np.arange(max_generaciones)
     fig, ax = plt.subplots()
@@ -108,7 +103,7 @@ def graf_media_desviacion_por_generacion(max_generaciones, _media_desviacion):
     return
 
 
-# #################  Mejor fitness por generación de cada ejecución  #########################
+# Mejor fitness por generación de cada ejecución
 def graf_mejor_fitness_por_generacion(max_generaciones, _ejecuciones,
                                       _num_ejecuciones):
     x = np.arange(max_generaciones)

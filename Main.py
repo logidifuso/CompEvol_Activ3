@@ -265,38 +265,22 @@ ejecuciones = []
 AES = 0
 SR = 0
 for i in range(NUM_EJECUCIONES):
-    # print("ejecucion número: ", i)  todo: A quitar
     start = time.time()
     primer_hit, estad_ejecucion = ejecucion(MAX_GENERACIONES)
     if primer_hit is not False:
         AES += primer_hit * TAMANO_POBLACION
+        SR += 1
     end = time.time()
     ejecuciones.append(estad_ejecucion)
 
-print("Tiempo requerido: %s" % (end-start))
-
 AES /= NUM_EJECUCIONES
 SR = (100*SR) / NUM_EJECUCIONES
-print("\nNumero de ""runs"": ", NUM_EJECUCIONES)
-print("Usando como criterio de exito un valor de fitness máximo =", TARGET_FITNESS)
-print("El AES obtenido es:", AES)
-print("El SR (Success Rate) obtenido es: " + str(SR) + "%")
 
+# ###################### CALCULO DE ESTADÍSTICAS ######################
 ejecuciones = np.asarray(ejecuciones)   # Typecast como np array para facilitar los cálculos de las estadísticas
-
-
-####################################################################################################
-# 1. Cálculo del MBF
-# 2. Plot la mejor aproximación
-# Nota: como mejor individuo por ejecución escojo el mejor de la última generación (excepto en algún caso
-# raro y aparente además, como por ejemplo con selección (lambda, mu) y pocas generaciones será correcto)
-####################################################################################################
-
 MBF = ejecuciones[0, MAX_GENERACIONES - 1, 3]
 mejor_individuo = ejecuciones[0, MAX_GENERACIONES - 1, 1]
 fitness_candidato = ejecuciones[0, MAX_GENERACIONES - 1, 3]
-print("Mejor individuo propuesto:\n", mejor_individuo)
-# input()
 
 i = 1
 while i < NUM_EJECUCIONES:
@@ -305,10 +289,16 @@ while i < NUM_EJECUCIONES:
         mejor_individuo = ejecuciones[i, MAX_GENERACIONES - 1, 1]
     i += 1
 MBF /= NUM_EJECUCIONES
-print("El MBF obtenido es: ", MBF)
-print("El mejor individuo es:", mejor_individuo)
 
-################################## CALCULO DE ESTADÍSTICAS ###################################################
+# Muestra resultados
+print("Tiempo requerido: %s" % (end-start))
+print("\nNumero de ""runs"": ", NUM_EJECUCIONES)
+print("Usando como criterio de exito un valor de fitness máximo =", TARGET_FITNESS)
+print("El AES obtenido es:", AES)
+print("El SR (Success Rate) obtenido es: " + str(SR) + "%")
+print("El MBF obtenido es: ", MBF)
+print("\nEl mejor individuo es:", mejor_individuo)
+
 vector_hits = ejecuciones[:, :, 0]  # donde cada elem del vector corresponde a una ejecución del experimento
 vector_mejores = ejecuciones[:, :, 1]
 vector_medias_fitness = ejecuciones[:, :, 2]
@@ -323,9 +313,6 @@ media_desviacion = np.average(vector_desviacion, 0)
 
 mejor_mejores_fitness = np.amin(vector_mejor_fitness, 0)  # Best ever case per generation
 peor_peores_fitness = np.amax(vector_peor_fitness, 0)  # Worst ever case per generation
-
-mejor_individuo = ejecuciones[0, MAX_GENERACIONES - 1, 1]
-
 
 
 def graf_mejor_aproximacion(x_ref, y_ref, problema_tipo, _mejor_individuo):

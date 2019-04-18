@@ -34,12 +34,12 @@ def inicia_rhh(_tamano_poblacion, min_long_fenotipo, max_long_fenotipo):
     for longitud in longitudes_fenotipos:
         for i in range(num_vueltas):
             # Genera individuo con el métod "Grow"
-            indiv = genera_indiv_aleat(longitud)
-            poblacion.append(indiv)
+            genotipo = genera_indiv_aleat(longitud)
+            poblacion.append(Individuo(genotipo))
 
             # Genera individuo con el método "Full"
-            indiv = genera_indiv_full(longitud)
-            poblacion.append(indiv)
+            genotipo = genera_indiv_full(longitud)
+            poblacion.append(Individuo(genotipo))
 
     if resto: # si aún no se ha llegado a completar la población deseada
         longitudes_fenotipos = list(longitudes_fenotipos)
@@ -48,11 +48,11 @@ def inicia_rhh(_tamano_poblacion, min_long_fenotipo, max_long_fenotipo):
     for i in range(resto):
         longitud = longitudes_fenotipos.pop()
 
-        indiv = genera_indiv_aleat(longitud)
-        poblacion.append(indiv)
+        genotipo = genera_indiv_aleat(longitud)
+        poblacion.append(Individuo(genotipo))
 
-        indiv = genera_indiv_full(longitud)
-        poblacion.append(indiv)
+        genotipo = genera_indiv_full(longitud)
+        poblacion.append(Individuo(genotipo))
 
     return poblacion
 
@@ -80,3 +80,8 @@ def genera_indiv_aleat(longitud_fenotipo, codones_kernel = 15):
 
 test = genera_indiv_full(5)
 print(test)
+
+test2 = inicia_rhh(8, 3, 5)
+print("\n\n\n")
+for el in test2:
+    print("\n", el)

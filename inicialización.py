@@ -1,6 +1,6 @@
 from Individuo import Individuo
 import random
-
+'''
 def inicia_rhh(_tamano_poblacion, min_long_fenotipo, max_long_fenotipo, codones_kernel = 15):
     """
     Crea una población del tamanno '_tamano_poblacion' usando el algoritmo ramped
@@ -19,7 +19,7 @@ def inicia_rhh(_tamano_poblacion, min_long_fenotipo, max_long_fenotipo, codones_
         _tamano_poblacion +=1
         print("Se annadió 1 individuo para tener una población par")
 
-    if _tamano_poblacion/2 < len(longitudes_fenotipos)
+    if _tamano_poblacion/2 < len(longitudes_fenotipos):
         # La población es demasiado pequenna para cubrir todas las
         # longitudes de genotipos. Hay que recortar estas longitudes
         longitudes_fenotipos = longitudes_fenotipos[:int(_tamano_poblacion/2)]
@@ -42,15 +42,25 @@ def inicia_rhh(_tamano_poblacion, min_long_fenotipo, max_long_fenotipo, codones_
 
     return poblacion
 
-
+'''
 def genera_indiv_full(longitud_fenotipo, codones_kernel = 15, expresiones = [1, 3, 5]):
     genotipo = []
     for i in range(longitud_fenotipo * codones_kernel):
         if i % codones_kernel == 0:
             genotipo.append(random.choice(expresiones))
-        #elif --> Condiciones para exponentes son posibles, p.e.
+        elif (i + 5) % codones_kernel == 0: # --> Condiciones para exponentes son posibles, p.e.
+            genotipo.append(1)
         else:
             genotipo.append(random.randint(10, 20))
 
+    return genotipo
 
-test = genera_indiv_full(5, 3)
+def genera_indiv_aleat(longitud_fenotipo, codones_kernel = 15, expresiones = [1, 3, 5])
+    genotipo = [random.randint(0, Individuo.MAX_VAL_CODON)
+                 for _ in range(random.randint(longitud_fenotipo*codones_kernel,
+                                               LONG_MAX_GENOTIPO))]
+
+
+
+test = genera_indiv_full(5)
+print(test)

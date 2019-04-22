@@ -66,8 +66,8 @@ def genera_indiv_full(longitud_fenotipo, codones_kernel=15, expresiones=[1, 3, 5
     chequeo14 = 14
     for i in range((longitud_fenotipo - 1) * codones_kernel):
         if i % codones_kernel == 0:
-            genotipo.append(1)
-            #genotipo.append(random.choice(expresiones))
+            #genotipo.append(1)
+            genotipo.append(random.choice(expresiones))
         elif i == chequeo5:  # --> Condiciones para exponentes son posibles, p.e.
             genotipo.append(0)
             chequeo5 += 15

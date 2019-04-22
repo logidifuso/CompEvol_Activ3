@@ -1,7 +1,7 @@
 # Diccionario con los parámetros usados
 
 params = {
-    'TAMANO_POBLACION': 5000,
+    'TAMANO_POBLACION': 5,
     'LONG_MAX_GENOTIPO': 240,
     'MAX_WRAPS': 2,
     'MAX_VAL_CODON': 256,

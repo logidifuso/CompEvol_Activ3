@@ -11,6 +11,7 @@ from Individuo import Individuo
 import graficos_progreso as graf
 from inicialización import inicia_rhh
 from parametros import params
+import pandas as pd
 
 """ --------------------------------------------------------------------------
                                 Parámetros
@@ -33,7 +34,7 @@ OPCION_SELECCION = "Torneo"
 TAMANO_TORNEO = 2
 
 NUM_EJECUCIONES = 5
-MAX_GENERACIONES = 80
+MAX_GENERACIONES = 8
 """ --------------------------------------------------------------------------
                                 Funciones
     -------------------------------------------------------------------------- """
@@ -373,7 +374,11 @@ ejecuciones = np.asarray(ejecuciones)   # Typecast como np array para facilitar 
 MBF = ejecuciones[0, MAX_GENERACIONES - 1, 3]
 mejor_individuo = ejecuciones[0, MAX_GENERACIONES - 1, 1]
 fitness_candidato = ejecuciones[0, MAX_GENERACIONES - 1, 3]
-
+'''
+mi_dataframe = pd.DataFrame(ejecuciones)
+mi_dataframe.to_csv('foo.csv', index=False)
+pd.DataFrame(ejecuciones).to_csv("ejecuciones.csv")
+'''
 i = 1
 while i < NUM_EJECUCIONES:
     MBF += ejecuciones[i, MAX_GENERACIONES - 1, 3]
@@ -397,6 +402,10 @@ vector_medias_fitness = ejecuciones[:, :, 2]
 vector_mejor_fitness = ejecuciones[:, :, 3]
 vector_peor_fitness = ejecuciones[:, :, 4]
 vector_desviacion = ejecuciones[:, :, 5]
+
+mi_dataframe = pd.DataFrame(vector_mejores)
+mi_dataframe.to_csv('foo.csv', index=False)
+pd.DataFrame(vector_mejores).to_csv("ejecuciones.csv")
 
 media_medias_fitness = np.average(vector_medias_fitness, 0)
 media_mejor_fitness = np.average(vector_mejor_fitness, 0)  # Mean Best fitness

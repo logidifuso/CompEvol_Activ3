@@ -105,7 +105,7 @@ def graf_media_desviacion_por_generacion(max_generaciones, _media_desviacion):
 
 # Mejor fitness por generación de cada ejecución
 def graf_mejor_fitness_por_generacion(max_generaciones, _ejecuciones,
-                                      _num_ejecuciones):
+                                      _num_ejecuciones, p_mutacion, p_cruze):
     x = np.arange(max_generaciones)
     fig, ax = plt.subplots()
 
@@ -125,5 +125,18 @@ def graf_mejor_fitness_por_generacion(max_generaciones, _ejecuciones,
 
     ax.grid(True)
     ax.legend()
-    plt.show()
+
+    texto = '\n'.join((
+        r'p_cruze=%.3f' % (p_cruze, ),
+        r'p_mutacion=%.3f' % (p_mutacion, )))
+
+    ax.text(0.0, 0.95, texto, transform=ax.transAxes, fontsize=14,
+            verticalalignment='top')
+
+    plt.show(block=False)
+    nombre_archivo = "".join(["./GRAFICOS/mejor_fitness_generacion",
+                              "pmut", str(p_mutacion).replace(".", ""),
+                              "pcruze", str(p_cruze).replace(".", "")])
+    plt.savefig(nombre_archivo)
+
     return

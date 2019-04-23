@@ -1,0 +1,6 @@
+start cmd /T:A0 /k "python Main.py -pmutac 0.05 -pcruze 1"
+start cmd /T:B0 /k "python Main.py -pmutac 0.05 -pcruze 0.995"
+start cmd /T:B0 /k "python Main.py -pmutac 0.05 -pcruze 0.990"
+start cmd /T:B0 /k "python Main.py -pmutac 0.05 -pcruze 0.895"
+start cmd /T:B0 /k "python Main.py -pmutac 0.05 -pcruze 0.890"
+start cmd /T:B0 /k "python Main.py -pmutac 0.05 -pcruze 0.885"

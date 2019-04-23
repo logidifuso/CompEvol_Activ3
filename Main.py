@@ -12,10 +12,28 @@ import graficos_progreso as graf
 from inicialización import inicia_rhh
 from parametros import params
 import pandas as pd
+import argparse
 
 """ --------------------------------------------------------------------------
                                 Parámetros
     -------------------------------------------------------------------------- """
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-pmutac", "--prob_mutacion",
+                    type=float, help="Prob. de mutación", )
+parser.add_argument("-pcruze", "--prob_cruze",
+                    type=float, help="Prob. de cruze 0 .. 1")
+args = parser.parse_args()
+if args.prob_mutacion is not None:
+    p_mutacion = args.prob_mutacion
+else:
+    p_mutacion = params['p_mutacion']  # todo: decidir si es una constante o se usa en algo memético
+if args.prob_cruze is not None:
+    p_cruze = args.prob_cruze
+else:
+    p_cruze = params['p_cruze']
+
+
 # TODO: De momento leo estos parámetros y los dejo como variables por si luego queremos
 # implementar algún tipo de algoritmo memético con ellos
 U = params['U']
@@ -23,7 +41,6 @@ K0 = params['K0']
 K1 = params['K1']
 S = params['S']
 
-p_mutacion = 0.05  # todo: decidir si es una constante o se usa en algo memético
 
 # TAMANO_POBLACION = 5000
 # LONG_MAX_GENOTIPO = 240
@@ -195,6 +212,8 @@ def evalua_poblacion(_poblacion, _target_fitness):
 def paso_generacional(_poblacion, prob_mutacion, opc_seleccion):
 
     tamano_poblacion = len(_poblacion)
+    elite = min(_poblacion)  # Reservo el mejor de la población por si debemos aplicar elitismo
+    #print("fenotipo:", elite.get_fenotipo())
 
     # 1.b) Selección de padres
     # TODO: Implemento solo SUS de momento. Opciones: if para elegir o \
@@ -205,17 +224,25 @@ def paso_generacional(_poblacion, prob_mutacion, opc_seleccion):
     # 2) Cruzes y mutaciones
     # TODO: De momento solo con cruze de 1punto fijo!!
     random.shuffle(lista_padres)  # Barajamos los padres --> cruze aleatorio
-    elite = min(_poblacion)  # Reservo el mejor de la población por si debemos aplicar elitismo
     hijos = []  # Reseteo de la población - aplicamos relevo generacional
 
     j = 0
     while j < (tamano_poblacion - 1):
         padres = [lista_padres[j], lista_padres[j+1]]
-        hijo1, hijo2 = Individuo.crossover_1pt_fijo(padres, codones_por_kernel=15)
-        # hijo1, hijo2 = Individuo.crossover_2pt_fijo(padres, codones_por_kernel=15) #todo: cambiado el tipo cruze
-        # hijo1, hijo2 = Individuo.crossover_uniforme(padres, codones_por_kernel=15, umbral=0.5)
-        hijos.append(hijo1)
-        hijos.append(hijo2)
+        # Implementación de la probabilidad de cruze
+        if random.random() > p_cruze:
+            h1 = np.array(lista_padres[j].get_genotipo())
+            h2 = np.array(lista_padres[j+1].get_genotipo())
+            hijo1 = Individuo(h1.astype(int))
+            hijo2 = Individuo(h2.astype(int))
+            hijos.append(hijo1)
+            hijos.append(hijo2)
+        else:
+            hijo1, hijo2 = Individuo.crossover_1pt_fijo(padres, codones_por_kernel=15)
+            # hijo1, hijo2 = Individuo.crossover_2pt_fijo(padres, codones_por_kernel=15) #todo: cambiado el tipo cruze
+            # hijo1, hijo2 = Individuo.crossover_uniforme(padres, codones_por_kernel=15, umbral=0.5)
+            hijos.append(hijo1)
+            hijos.append(hijo2)
         # 3) Mutaciones
         hijos[j].muta_en_kernel(prob_mutacion, codones_por_kernel=15)
         hijos[j+1].muta_en_kernel(prob_mutacion, codones_por_kernel=15)
@@ -225,10 +252,10 @@ def paso_generacional(_poblacion, prob_mutacion, opc_seleccion):
         j += 2
 
     peor_hijo = max(hijos)
-    if elite < peor_hijo:
+    mejor_hijo = min(hijos)
+    if elite < mejor_hijo:
         hijos.remove(peor_hijo)
         hijos.append(elite)
-
     '''
     # 1) Ordenación por fitness y asignación de probabilidades de selección
     # TODO: Implemento solo SUS de momento. Opciones: if para elegir o \
@@ -302,7 +329,7 @@ no alcanzó), estadisticas de cada generación
         nueva_generacion = paso_generacional(poblacion_actual, p_mutacion,
                                              params['OPCION_SELECCION'])
         poblacion_actual = nueva_generacion
-        # print("\n\n", min(nueva_generacion)) # todo: A quitar
+        #print(" ", min(poblacion_actual).get_fitness())
         estadistica_actual = evalua_poblacion(nueva_generacion, TARGET_FITNESS)
         if (estadistica_actual[0] is True) and (_primer_hit is False):
             _primer_hit = num_generacion
@@ -430,7 +457,20 @@ def graf_mejor_aproximacion(x_ref, y_ref, problema_tipo, _mejor_individuo):
     ax.grid()
 
     ax.legend()
+
+    texto = '\n'.join((
+        r'p_cruze=%.3f' % (p_cruze, ),
+        r'p_mutacion=%.3f' % (p_mutacion, )))
+
+    ax.text(0.0, 0.95, texto, transform=ax.transAxes, fontsize=14,
+            verticalalignment='top')
+
     plt.show(block=False)
+    nombre_archivo = "".join(["./GRAFICOS/mejor_aproximacion",
+                              "pmut", str(p_mutacion).replace(".", ""),
+                              "pcruze", str(p_cruze).replace(".", "")])
+    plt.savefig(nombre_archivo)
+
     return
 
 
@@ -444,4 +484,30 @@ graf.graf_delta_fitess_por_generacion(params['MAX_GENERACIONES'], media_mejor_fi
 
 graf.graf_media_desviacion_por_generacion(params['MAX_GENERACIONES'], media_desviacion)
 
-graf.graf_mejor_fitness_por_generacion(params['MAX_GENERACIONES'], ejecuciones, params['NUM_EJECUCIONES'])
+graf.graf_mejor_fitness_por_generacion(params['MAX_GENERACIONES'],
+                                       ejecuciones, params['NUM_EJECUCIONES'],
+                                       p_mutacion, p_cruze)
+
+
+def guarda_resultados():
+    nombre_archivo = "".join(["./GRAFICOS/resultados",
+                              "_pmut", str(p_mutacion).replace(".", ""),
+                              "_pcruze", str(p_cruze).replace(".", "")])
+    f = open(nombre_archivo, "w+")
+
+    f.write("PARAMETROS DEL EXPERIMENTO:\n")
+    f.write("Tamano de la población: %s \n" % params['TAMANO_POBLACION'])
+    f.write("Número de generaciones por run: %s \n" % params['MAX_GENERACIONES'])
+    f.write("Numero de ""runs"": %s" % params['NUM_EJECUCIONES'])
+    f.write("\n\n")
+
+    f.write("Tiempo requerido por run: %s \n" % (end - start))
+    f.write("\n\nRESULTADOS GENERALES DEL EXPERIMENTO:\n")
+    f.write("Usando como criterio de exito un valor de fitness máximo = %s \n" % TARGET_FITNESS)
+    f.write("El AES obtenido es: %s \n" % AES)
+    f.write("El SR (Success Rate) obtenido es: %s %% \n" % SR)
+    f.write("El MBF obtenido es: %s \n" % MBF)
+    f.write("\nEl mejor individuo es: %s" % mejor_individuo)
+
+guarda_resultados()
+

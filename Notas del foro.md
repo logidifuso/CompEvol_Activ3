@@ -120,3 +120,64 @@
 - [ ] Implemente ramped half-and-half
 - [ ] Ajusta probabilidad de mutación de bit a entero (entero debería ser x8 p.e. si 8-bits por codón)
 - [ ] Lee de nuevo las notas
+- [ ] Parámetros para regresión usados en Ponyge2: https://github.com/PonyGE/PonyGE2/blob/master/parameters/regression.txt
+
+## Resultados de la ejecución con p_mutacion = 0.1 --> No ha ido bien, desde luego
+
+Tiempo requerido: 78.71390533447266
+
+Numero de runs:  5
+Usando como criterio de exito un valor de fitness máximo = 0.1
+El AES obtenido es: 31000.0
+El SR (Success Rate) obtenido es: 20.0%
+El MBF obtenido es:  0.3138755730838675
+
+El mejor individuo es: Individuo ID: 1551361
+Genotipo: [  1   0 198   1 141   0 210  80  80   0 252 110 144 230 191 200 155 202
+ 149 107 163   5  37 131 139 169 148 186 110 181   3  29  24  32 213 139
+ 256 161 189  46 249 251 254  19 164  98 189 243 228 201 186  47 148 153
+ 106  91 232  94  90 254 111  67 213]
+Fenotipo Compilado: True
+Fenotipo:
+def f(x):
+  return +1.1e-0*np.exp(-4.0e+0*(1.0e+0 - x)**2)-5.9e-3*((6.7e-9*x + 8.8e+0)**1)
+Valor de fitness: 0.041853595750563646
+Número de codones usados: 30
+Probabilidad lineal de cruze: None:
+Probabilidad acumulada para cruze: None:
+
+![1556010497217](C:\Users\SanchezJ\AppData\Roaming\Typora\typora-user-images\1556010497217.png)
+
+![1556010522676](C:\Users\SanchezJ\AppData\Roaming\Typora\typora-user-images\1556010522676.png)
+
+```python
+# Diccionario con los parámetros usados
+
+params = {
+    'TAMANO_POBLACION': 5000,
+    'LONG_MAX_GENOTIPO': 240,
+    'MAX_WRAPS': 2,
+    'MAX_VAL_CODON': 256,
+
+    'MIN_LONG_FENOTIPO_INICIAL': 1,
+    'MAX_LONG_FENOTIPO_INICIAL': 8,
+
+    'ARCHIVO_GRAMATICA': 'gramatica_nucleos.bnf',
+    'PROBLEMA_TIPO': 'Problema1',
+
+    'OPCION_SELECCION': 'Torneo',
+    'TAMANO_TORNEO': 2,
+
+    'NUM_EJECUCIONES': 5,
+    'MAX_GENERACIONES': 80,
+
+    'U': 0.1,
+    'K0': 1,
+    'K1': 10,
+    'S': 1.8,
+
+    'p_mutacion': 0.1,  # todo: decidir si es una constante o se usa en algo memético
+
+}
+```
+

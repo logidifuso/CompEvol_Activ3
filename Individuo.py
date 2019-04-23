@@ -32,6 +32,9 @@ class Individuo(object):
     def __lt__(self, other):
         return self.fitness < other.fitness
 
+    def __eq__(self, other):
+        return self.fitness == other.fitness
+
     def __str__(self):
         return ("Individuo ID: {0}\nGenotipo: {1}\nFenotipo Compilado: {2}\n"
                 "Fenotipo:\n{3}\nValor de fitness: {4}\n"
@@ -132,8 +135,13 @@ class Individuo(object):
         !!!!!!!!!!:param other:
         !!!!!!!!!!!:return:
         """
-        long_pad1 = len(padres[0].get_genotipo())
-        long_pad2 = len(padres[1].get_genotipo())
+        long_pad1 = min(len(padres[0].get_genotipo()),
+                        padres[0].codones_usados * codones_por_kernel)
+        long_pad2 = min(len(padres[1].get_genotipo()),
+                        padres[1].codones_usados * codones_por_kernel)
+
+        # long_pad1 = len(padres[0].get_genotipo())
+        # long_pad2 = len(padres[1].get_genotipo())
         punto_crossover_max = min(long_pad1, long_pad2)
         punto_crossover = random.randint(1, punto_crossover_max//codones_por_kernel)
         punto_crossover *= codones_por_kernel
@@ -205,13 +213,21 @@ class Individuo(object):
         :param codones_por_kernel:
         :return:
         """
-        punto_crossover_max1 = padres[0].codones_usados
-        punto_crossover_max2 = padres[1].codones_usados
+        punto_crossover_max1 = min(len(padres[0].get_genotipo()),
+                                   padres[0].codones_usados * codones_por_kernel)
+        punto_crossover_max2 = min(len(padres[1].get_genotipo()),
+                                   padres[1].codones_usados * codones_por_kernel)
 
-        punto1_crossover = codones_por_kernel * \
-                           random.randint(1, punto_crossover_max1//codones_por_kernel)
-        punto2_crossover = codones_por_kernel * \
-                           random.randint(1, punto_crossover_max2//codones_por_kernel)
+        punto1_crossover = random.randint(1, punto_crossover_max1//codones_por_kernel)
+        punto2_crossover = random.randint(1, punto_crossover_max2//codones_por_kernel)
+
+        # punto_crossover_max1 = padres[0].codones_usados
+        # punto_crossover_max2 = padres[1].codones_usados
+
+        # punto1_crossover = codones_por_kernel * \
+        #                   random.randint(1, punto_crossover_max1//codones_por_kernel)
+        # punto2_crossover = codones_por_kernel * \
+        #                  random.randint(1, punto_crossover_max2//codones_por_kernel)
 
         h1 = np.array([])
         h2 = np.array([])
@@ -227,7 +243,7 @@ class Individuo(object):
 
         return hijo1, hijo2
 
-    def  crossover_uniforme(padres, codones_por_kernel=15, umbral = 0.5):
+    def crossover_uniforme(padres, codones_por_kernel=15, umbral=0.5):
         """
         Realiza un crossover uniforme. Para cada Kernel usado en los padres
         se genera un número aleatorio en el intervalo [0,1]. Si este número
@@ -240,6 +256,7 @@ class Individuo(object):
         con el genotipo más largo ambos hijos heredan los kernels "extras"
         según el umbral dado (para reducir el "bloating")
         :param codones_por_kernel:
+        :param umbral
         :return:
         """
 

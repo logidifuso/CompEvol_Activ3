@@ -1,9 +1,13 @@
 # Diccionario con los parámetros usados
 
 params = {
-    'TAMANO_POBLACION': 100,
+    'TAMANO_POBLACION': 5,
     'LONG_MAX_GENOTIPO': 240,
     'MAX_WRAPS': 2,
+    'MAX_VAL_CODON': 256,
+
+    'MIN_LONG_FENOTIPO_INICIAL': 1,
+    'MAX_LONG_FENOTIPO_INICIAL': 8,
 
     'U': 0.1,
     'K0': 1,
@@ -19,5 +23,5 @@ params = {
     'TAMANO_TORNEO': 2,
 
     'NUM_EJECUCIONES': 1,
-    'MAX_GENERACIONES': 40
+    'MAX_GENERACIONES': 80
 }

@@ -9,29 +9,31 @@ import matplotlib.pyplot as plt
 import interprete_gramatica
 from Individuo import Individuo
 import graficos_progreso as graf
+from inicialización import inicia_rhh
+from parametros import params
+import pandas as pd
 
 """ --------------------------------------------------------------------------
                                 Parámetros
     -------------------------------------------------------------------------- """
-TAMANO_POBLACION = 1000
-LONG_MAX_GENOTIPO = 240
-MAX_WRAPS = 2
-
-U = 0.1
-K0 = 1
-K1 = 10
-
-S = 1.8
-
-ARCHIVO_GRAMATICA = 'gramatica_nucleos.bnf'
-PROBLEMA_TIPO = 'Problema1'
+# TODO: De momento leo estos parámetros y los dejo como variables por si luego queremos
+# implementar algún tipo de algoritmo memético con ellos
+U = params['U']
+K0 = params['K0']
+K1 = params['K1']
+S = params['S']
 
 p_mutacion = 0.05  # todo: decidir si es una constante o se usa en algo memético
-OPCION_SELECCION = "Torneo"
-TAMANO_TORNEO = 2
 
-NUM_EJECUCIONES = 1
-MAX_GENERACIONES = 40
+# TAMANO_POBLACION = 5000
+# LONG_MAX_GENOTIPO = 240
+# MAX_WRAPS = 2
+# ARCHIVO_GRAMATICA = 'gramatica_nucleos.bnf'
+# PROBLEMA_TIPO = 'Problema1'
+# OPCION_SELECCION = "Torneo"
+# TAMANO_TORNEO = 2
+# NUM_EJECUCIONES = 5
+# MAX_GENERACIONES = 8
 """ --------------------------------------------------------------------------
                                 Funciones
     -------------------------------------------------------------------------- """
@@ -130,7 +132,7 @@ def seleccion_sus(_poblacion):
         pos += 1
 
     seleccion_padres = 0
-    tamano_poblacion = len(_poblacion)
+    # tamano_poblacion = len(_poblacion)
     # En nuestro caso lamdda = al tamanno de la población,
     # pero dejo la variable para posibles futuros experimentos
     lambda_padres = len(validos)
@@ -182,7 +184,7 @@ def evalua_poblacion(_poblacion, _target_fitness):
     mejor = min(fitnesses)
     # varianza = np.var(fitnesses)
     desviacion = np.std(fitnesses)
-    mejor_indiv = _poblacion[0]
+    mejor_indiv = min(_poblacion)   # _poblacion[0] :todo: correcto??
     if mejor <= _target_fitness:
         hit = True
     else:
@@ -197,7 +199,7 @@ def paso_generacional(_poblacion, prob_mutacion, opc_seleccion):
     # 1.b) Selección de padres
     # TODO: Implemento solo SUS de momento. Opciones: if para elegir o \
     if opc_seleccion == "Torneo":
-        lista_padres = seleccion_torneo(_poblacion, TAMANO_TORNEO)
+        lista_padres = seleccion_torneo(_poblacion, params['TAMANO_TORNEO'])
     else:
         lista_padres = seleccion_sus(_poblacion)
     # 2) Cruzes y mutaciones
@@ -243,7 +245,6 @@ def paso_generacional(_poblacion, prob_mutacion, opc_seleccion):
         pos += 1
         
     '''
-
     return hijos
 
 
@@ -264,12 +265,19 @@ no alcanzó), estadisticas de cada generación
     """
     _primer_hit = False
     estadisticas = []
-    poblacion_actual = []
+    # poblacion_actual = []
     # TODO: Implementar Ramp half-and-half
+    poblacion_actual = inicia_rhh(params['TAMANO_POBLACION'],
+                                  params['MIN_LONG_FENOTIPO_INICIAL'],
+                                  params['MAX_LONG_FENOTIPO_INICIAL'])
+    for indiv in poblacion_actual:
+        mapeo_y_fitness(indiv, U, K0, K1, X_REF, Y_REF, M)
+    '''
     for _ in range(TAMANO_POBLACION):
         nuevo_individuo = Individuo(longitud_max=LONG_MAX_GENOTIPO)
         mapeo_y_fitness(nuevo_individuo, U, K0, K1, X_REF, Y_REF, M)
         poblacion_actual.append(nuevo_individuo)
+    '''
 
     # -------------------    Inicializa población    -------------------------
     # 1) Ordenación por fitness y asignación de probabilidades de selección
@@ -281,7 +289,7 @@ no alcanzó), estadisticas de cada generación
     acum = 0
 
     for _elem in poblacion_actual:
-        _elem.set_prob_lin(pos, S, TAMANO_POBLACION)
+        _elem.set_prob_lin(pos, S, params['TAMANO_POBLACION'])
         acum += _elem.get_prob_padre()
         _elem.set_prob_padre_acumulada(acum)
         pos += 1
@@ -291,7 +299,8 @@ no alcanzó), estadisticas de cada generación
     # ----------------- Bucle generacional  ----------------------------------
     num_generacion = 1
     while num_generacion < max_generaciones:
-        nueva_generacion = paso_generacional(poblacion_actual, p_mutacion, OPCION_SELECCION)
+        nueva_generacion = paso_generacional(poblacion_actual, p_mutacion,
+                                             params['OPCION_SELECCION'])
         poblacion_actual = nueva_generacion
         # print("\n\n", min(nueva_generacion)) # todo: A quitar
         estadistica_actual = evalua_poblacion(nueva_generacion, TARGET_FITNESS)
@@ -313,13 +322,21 @@ no alcanzó), estadisticas de cada generación
       3.2 Mapea a fenotipos
                                                                                 
     -------------------------------------------------------------------------- """
-gramatica_bnf = interprete_gramatica.Gramatica(ARCHIVO_GRAMATICA)
+gramatica_bnf = interprete_gramatica.Gramatica(params['ARCHIVO_GRAMATICA'])
 
 
-X_REF, Y_REF, M = muestras_de_referencia(PROBLEMA_TIPO)
+X_REF, Y_REF, M = muestras_de_referencia(params['PROBLEMA_TIPO'])
 TARGET_FITNESS = K0 * U  # TODO: OJO!!! que esto no garantiza un hit completo
 # TODO: Podria ser que todos los errores fueran 0 y uno "grande"
 
+'''
+poblacion_test = inicia_rhh(8, 2, 4)
+for el in poblacion_test:
+    mapeo_y_fitness(el,U, K0, K1, X_REF, Y_REF, M)
+    print("\n", el)
+
+input("A ver si salió...")
+'''
 '''
 TESTEO
 
@@ -337,35 +354,39 @@ input("chimpún!!!")
 ejecuciones = []
 AES = 0
 SR = 0
-for i in range(NUM_EJECUCIONES):
+for i in range(params['NUM_EJECUCIONES']):
     start = time.time()
-    primer_hit, estad_ejecucion = ejecucion(MAX_GENERACIONES)
+    primer_hit, estad_ejecucion = ejecucion(params['MAX_GENERACIONES'])
     if primer_hit is not False:
-        AES += primer_hit * TAMANO_POBLACION
+        AES += primer_hit * params['TAMANO_POBLACION']
         SR += 1
     end = time.time()
     ejecuciones.append(estad_ejecucion)
 
-AES /= NUM_EJECUCIONES
-SR = (100*SR) / NUM_EJECUCIONES
+AES /= params['NUM_EJECUCIONES']
+SR = (100*SR) / params['NUM_EJECUCIONES']
 
 # ###################### CALCULO DE ESTADÍSTICAS ######################
 ejecuciones = np.asarray(ejecuciones)   # Typecast como np array para facilitar los cálculos de las estadísticas
-MBF = ejecuciones[0, MAX_GENERACIONES - 1, 3]
-mejor_individuo = ejecuciones[0, MAX_GENERACIONES - 1, 1]
-fitness_candidato = ejecuciones[0, MAX_GENERACIONES - 1, 3]
-
+MBF = ejecuciones[0, params['MAX_GENERACIONES'] - 1, 3]
+mejor_individuo = ejecuciones[0, params['MAX_GENERACIONES'] - 1, 1]
+fitness_candidato = ejecuciones[0, params['MAX_GENERACIONES'] - 1, 3]
+'''
+mi_dataframe = pd.DataFrame(ejecuciones)
+mi_dataframe.to_csv('foo.csv', index=False)
+pd.DataFrame(ejecuciones).to_csv("ejecuciones.csv")
+'''
 i = 1
-while i < NUM_EJECUCIONES:
-    MBF += ejecuciones[i, MAX_GENERACIONES - 1, 3]
-    if ejecuciones[i, MAX_GENERACIONES - 1, 3] < fitness_candidato:
-        mejor_individuo = ejecuciones[i, MAX_GENERACIONES - 1, 1]
+while i < params['NUM_EJECUCIONES']:
+    MBF += ejecuciones[i, params['MAX_GENERACIONES'] - 1, 3]
+    if ejecuciones[i, params['MAX_GENERACIONES'] - 1, 3] < fitness_candidato:
+        mejor_individuo = ejecuciones[i, params['MAX_GENERACIONES'] - 1, 1]
     i += 1
-MBF /= NUM_EJECUCIONES
+MBF /= params['NUM_EJECUCIONES']
 
 # Muestra resultados
 print("Tiempo requerido: %s" % (end - start))
-print("\nNumero de ""runs"": ", NUM_EJECUCIONES)
+print("\nNumero de ""runs"": ", params['NUM_EJECUCIONES'])
 print("Usando como criterio de exito un valor de fitness máximo =", TARGET_FITNESS)
 print("El AES obtenido es:", AES)
 print("El SR (Success Rate) obtenido es: " + str(SR) + "%")
@@ -378,6 +399,10 @@ vector_medias_fitness = ejecuciones[:, :, 2]
 vector_mejor_fitness = ejecuciones[:, :, 3]
 vector_peor_fitness = ejecuciones[:, :, 4]
 vector_desviacion = ejecuciones[:, :, 5]
+
+mi_dataframe = pd.DataFrame(vector_mejores)
+mi_dataframe.to_csv('foo.csv', index=False)
+pd.DataFrame(vector_mejores).to_csv("ejecuciones.csv")
 
 media_medias_fitness = np.average(vector_medias_fitness, 0)
 media_mejor_fitness = np.average(vector_mejor_fitness, 0)  # Mean Best fitness
@@ -409,14 +434,14 @@ def graf_mejor_aproximacion(x_ref, y_ref, problema_tipo, _mejor_individuo):
     return
 
 
-graf_mejor_aproximacion(X_REF, Y_REF, PROBLEMA_TIPO, mejor_individuo)
+graf_mejor_aproximacion(X_REF, Y_REF, params['PROBLEMA_TIPO'], mejor_individuo)
 
-graf.graf_medias_fitness_por_generacion(MAX_GENERACIONES, media_medias_fitness,
+graf.graf_medias_fitness_por_generacion(params['MAX_GENERACIONES'], media_medias_fitness,
                                         media_mejor_fitness, media_peor_fitness)
 
-graf.graf_delta_fitess_por_generacion(MAX_GENERACIONES, media_mejor_fitness,
+graf.graf_delta_fitess_por_generacion(params['MAX_GENERACIONES'], media_mejor_fitness,
                                       mejor_mejores_fitness, peor_peores_fitness)
 
-graf.graf_media_desviacion_por_generacion(MAX_GENERACIONES, media_desviacion)
+graf.graf_media_desviacion_por_generacion(params['MAX_GENERACIONES'], media_desviacion)
 
-graf.graf_mejor_fitness_por_generacion(MAX_GENERACIONES, ejecuciones, NUM_EJECUCIONES)
+graf.graf_mejor_fitness_por_generacion(params['MAX_GENERACIONES'], ejecuciones, params['NUM_EJECUCIONES'])

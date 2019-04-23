@@ -498,7 +498,9 @@ def guarda_resultados():
     f.write("PARAMETROS DEL EXPERIMENTO:\n")
     f.write("Tamano de la población: %s \n" % params['TAMANO_POBLACION'])
     f.write("Número de generaciones por run: %s \n" % params['MAX_GENERACIONES'])
-    f.write("Numero de ""runs"": %s" % params['NUM_EJECUCIONES'])
+    f.write("Numero de ""runs"": %s\n" % params['NUM_EJECUCIONES'])
+    f.write("Probabilidad de cruze: %s\n" % p_cruze)
+    f.write("Probabilidad de mutacion: %s\n" % p_mutacion)
     f.write("\n\n")
 
     f.write("Tiempo requerido por run: %s \n" % (end - start))
@@ -508,6 +510,8 @@ def guarda_resultados():
     f.write("El SR (Success Rate) obtenido es: %s %% \n" % SR)
     f.write("El MBF obtenido es: %s \n" % MBF)
     f.write("\nEl mejor individuo es: %s" % mejor_individuo)
+
+    f.close()
 
 
 guarda_resultados()

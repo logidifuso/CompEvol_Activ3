@@ -1,7 +1,7 @@
 # Diccionario con los parámetros usados
 
 params = {
-    'TAMANO_POBLACION': 50,
+    'TAMANO_POBLACION': 2000,
     'LONG_MAX_GENOTIPO': 240,
     'MAX_WRAPS': 2,
     'MAX_VAL_CODON': 256,
@@ -15,8 +15,8 @@ params = {
     'OPCION_SELECCION': 'Torneo',
     'TAMANO_TORNEO': 2,
 
-    'NUM_EJECUCIONES': 3,
-    'MAX_GENERACIONES': 5,
+    'NUM_EJECUCIONES': 10,
+    'MAX_GENERACIONES': 200,
 
     'U': 0.1,
     'K0': 1,

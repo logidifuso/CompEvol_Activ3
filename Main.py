@@ -509,5 +509,5 @@ def guarda_resultados():
     f.write("El MBF obtenido es: %s \n" % MBF)
     f.write("\nEl mejor individuo es: %s" % mejor_individuo)
 
-guarda_resultados()
 
+guarda_resultados()

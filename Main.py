@@ -408,6 +408,7 @@ while i < params['NUM_EJECUCIONES']:
     MBF += ejecuciones[i, params['MAX_GENERACIONES'] - 1, 3]
     if ejecuciones[i, params['MAX_GENERACIONES'] - 1, 3] < fitness_candidato:
         mejor_individuo = ejecuciones[i, params['MAX_GENERACIONES'] - 1, 1]
+        fitness_candidato = ejecuciones[i, params['MAX_GENERACIONES'] - 1, 3]
     i += 1
 MBF /= params['NUM_EJECUCIONES']
 
@@ -506,6 +507,7 @@ def guarda_resultados():
     f.write("Tiempo requerido por run: %s \n" % (end - start))
     f.write("\n\nRESULTADOS GENERALES DEL EXPERIMENTO:\n")
     f.write("Usando como criterio de exito un valor de fitness máximo = %s \n" % TARGET_FITNESS)
+    # todo: TArget fitness debería estar en los parámetros -- lleválo allí
     f.write("El AES obtenido es: %s \n" % AES)
     f.write("El SR (Success Rate) obtenido es: %s %% \n" % SR)
     f.write("El MBF obtenido es: %s \n" % MBF)
@@ -514,4 +516,26 @@ def guarda_resultados():
     f.close()
 
 
+def guarda_resultados_csv():
+    # newline='' necesario para evitar lineas vacias adicionales en cada row
+    archivo_resultados = open('./GRAFICOS/resumen_estad.csv', 'a', newline='')
+    with archivo_resultados:
+        campos = ['Tamano Poblacion', '# generaciones', '# runs', 'Prob cruze',
+                  'Prob mutación', 'tiempo/run', 'criterio exito', 'AES', 'SR',
+                  'MBF', 'Mejor']
+        writer = csv.DictWriter(archivo_resultados, fieldnames=campos)
+        #writer.writeheader()
+        writer.writerow({'Tamano Poblacion': params['TAMANO_POBLACION'],
+                         '# generaciones': params['MAX_GENERACIONES'],
+                         '# runs': params['NUM_EJECUCIONES'],
+                         'Prob cruze': p_cruze,
+                         'Prob mutación': p_mutacion,
+                         'tiempo/run': (end - start),
+                         'criterio exito': TARGET_FITNESS,
+                         'AES': AES,
+                         'SR': SR,
+                         'MBF': MBF})
+
+
 guarda_resultados()
+guarda_resultados_csv()

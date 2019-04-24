@@ -1,20 +1,260 @@
-,0,1
-0,"Individuo ID: 10
-Genotipo: [193, 99, 73, 9, 65, 193, 181, 126, 145, 169, 162, 151, 27, 244, 8, 12, 150, 151, 247, 59, 93, 222, 225, 182, 45, 25, 102, 61, 189, 162, 181, 86, 100, 49, 41, 142, 119, 54, 27, 186, 153, 92, 40, 173, 255, 184, 33, 33, 118, 147, 208, 221, 197, 30, 58, 200, 102, 166, 176, 77, 56, 26, 184, 155, 65, 1, 232, 111, 8, 114, 247, 78, 236, 11, 208, 193, 188, 63, 208, 222, 32, 254, 69, 156, 195, 87, 4, 165, 74, 32, 12, 162, 24, 143, 65, 153, 120, 16, 124, 126, 184, 171, 129, 145, 0, 197, 93, 234, 235, 135, 230, 143, 173, 71, 146, 30, 140, 250, 10, 82, 230, 20, 90, 96, 142, 0, 45, 249, 15, 149, 41, 113, 191, 204, 12, 162, 0, 222, 127, 10, 150, 92, 221, 20, 125, 182, 212, 171, 86, 70, 219, 197, 18, 38, 248, 46, 215, 252, 244, 26, 119, 141, 128, 45, 162, 203, 123, 198, 93, 51, 156, 212, 109, 66, 143, 170, 60, 87, 56, 162, 170, 168, 38, 217, 122, 234, 163, 151, 92, 7, 6, 121, 177, 255, 117, 253, 18, 6, 28, 108]
+,0,1,2,3,4,5,6,7,8,9
+0,"Individuo ID: 20
+Genotipo: [52, 174, 187, 187, 97, 15, 74, 188, 217, 204, 202, 77, 82, 148, 171, 255, 178, 212, 226, 82, 8, 7, 157, 227, 200, 79, 144, 76, 126, 64, 171, 142, 109, 48, 127, 177, 89, 16, 206, 162, 86, 20, 32, 119, 163, 1, 196, 14, 176, 63, 231, 143, 219, 92, 99, 109, 144, 34, 93, 185, 57, 67, 143, 145, 126, 82, 22, 198, 174, 46, 146, 2, 184, 227, 188, 49, 125, 5, 218, 200, 181, 143, 177, 160, 246, 109, 182, 102, 159, 180, 228, 194, 43, 28, 234, 121, 57, 229, 65, 20, 193, 7, 201, 28, 8, 39, 57, 27, 191, 135]
 Fenotipo Compilado: True
 Fenotipo:
 def f(x):
-  return -2.9e-3*np.exp(-2.6e-9*(1.1e-4 - x)**2)+8.7e-3*np.exp(-7.5e+5*(8.2e-9 - x)**2)
-Valor de fitness: 2.456070092415027
-Número de codones usados: 30
-Probabilidad lineal de cruze: 0.009999999999999998:
-Probabilidad acumulada para cruze: 0.009999999999999998:","Individuo ID: 10
-Genotipo: [193, 99, 73, 9, 65, 193, 181, 126, 145, 169, 162, 151, 27, 244, 8, 12, 150, 151, 247, 59, 93, 222, 225, 182, 45, 25, 102, 61, 189, 162, 181, 86, 100, 49, 41, 142, 119, 54, 27, 186, 153, 92, 40, 173, 255, 184, 33, 33, 118, 147, 208, 221, 197, 30, 58, 200, 102, 166, 176, 77, 56, 26, 184, 155, 65, 1, 232, 111, 8, 114, 247, 78, 236, 11, 208, 193, 188, 63, 208, 222, 32, 254, 69, 156, 195, 87, 4, 165, 74, 32, 12, 162, 24, 143, 65, 153, 120, 16, 124, 126, 184, 171, 129, 145, 0, 197, 93, 234, 235, 135, 230, 143, 173, 71, 146, 30, 140, 250, 10, 82, 230, 20, 90, 96, 142, 0, 45, 249, 15, 149, 41, 113, 191, 204, 12, 162, 0, 222, 127, 10, 150, 92, 221, 20, 125, 182, 212, 171, 86, 70, 219, 197, 18, 38, 248, 46, 215, 252, 244, 26, 119, 141, 128, 45, 162, 203, 123, 198, 93, 51, 156, 212, 109, 66, 143, 170, 60, 87, 56, 162, 170, 168, 38, 217, 122, 234, 163, 151, 92, 7, 6, 121, 177, 255, 117, 253, 18, 6, 28, 108]
+  return +8.7e-5*np.tanh(3.8e-4*x + 5.7e+8)
+Valor de fitness: 2.4723120507879406
+Número de codones usados: 15
+Probabilidad lineal de cruze: 0.003999999999999999:
+Probabilidad acumulada para cruze: 0.003999999999999999:","Individuo ID: 88
+Genotipo: [ 78 209 195 144 203 133 102  90  96 223 192 255 153 104 187 223 148 202
+   8 177 137 209 232 189 177 234 125 227  63 155  82 170 150  36 192 183
+ 127 149  72 146  38 161 228 126 198 205  57  88  33 209  74 154 102 131
+  23 136  51   2 155 244   7 121 153 128 234 236 154 114 103 217 189 109
+  82 246  92 221 100 166  40 181  87  37   4 121  14  53 100 245 240 150
+ 225 189 106  43 156  46 188 109  87  26 162 211  88 111 188 105 130 107
+  19  10  78]
 Fenotipo Compilado: True
 Fenotipo:
 def f(x):
-  return -2.9e-3*np.exp(-2.6e-9*(1.1e-4 - x)**2)+8.7e-3*np.exp(-7.5e+5*(8.2e-9 - x)**2)
-Valor de fitness: 2.456070092415027
-Número de codones usados: 30
-Probabilidad lineal de cruze: 0.009999999999999998:
-Probabilidad acumulada para cruze: 0.009999999999999998:"
+  return -7.4e-3*np.exp(-4.0e+3*(4.5e-4 - x)**2)
+Valor de fitness: 2.472250538387285
+Número de codones usados: 15
+Probabilidad lineal de cruze: None:
+Probabilidad acumulada para cruze: None:","Individuo ID: 141
+Genotipo: [ 78 209 195 144 243 133 239  90 127 223 192 255 153 104 187 223 148 202
+   8 177 137 209 232 189 177 234 125 227  63 155  82 170 150 174 192 183
+ 127 149  72 146  38 161  26 126 198 205  57  88  33 209  74 154 102 131
+  23 136  90   2 155  73 122 248  41]
+Fenotipo Compilado: True
+Fenotipo:
+def f(x):
+  return -7.4e-3*np.exp(-6.0e-3*(4.5e-4 - x)**2)
+Valor de fitness: 2.4413961944253044
+Número de codones usados: 15
+Probabilidad lineal de cruze: None:
+Probabilidad acumulada para cruze: None:","Individuo ID: 170
+Genotipo: [ 78 209 195 144 243 133 239  90 127 223 192 255 153 104 187 223 148 202
+ 243 177 215 209 232 189 177 234 125 227  63 155  82 170 150 174 192 183
+  20 149  72  77 227 161  26 126 198 205  57  88  33 209  74 154 102 131
+  23 136  90   2 155  73 122 248  41]
+Fenotipo Compilado: True
+Fenotipo:
+def f(x):
+  return -7.4e-3*np.exp(-6.0e-3*(4.5e-4 - x)**2)
+Valor de fitness: 2.4413961944253044
+Número de codones usados: 15
+Probabilidad lineal de cruze: None:
+Probabilidad acumulada para cruze: None:","Individuo ID: 224
+Genotipo: [ 78 209 195 144 243 133 239  90 127 223 101 255 153 104 187 255 178 253
+  61  82 140   7 157 139   2  79 144 235 198  64  23 183 226  39 152   4
+  10  76 176  82  79  94  56 177 215  86 135 226]
+Fenotipo Compilado: True
+Fenotipo:
+def f(x):
+  return -7.4e-3*np.exp(-6.0e-3*(3.5e-4 - x)**2)
+Valor de fitness: 2.4413961781107325
+Número de codones usados: 15
+Probabilidad lineal de cruze: None:
+Probabilidad acumulada para cruze: None:","Individuo ID: 295
+Genotipo: [ 78 209 195 144 243 133 239  90 127 223 101 255 153 238 187 255 178 253
+  61  82 140   7 157 139   2  79  86 235 198  64  23 183 236  39 152   4
+  10  76 176  82  79  94  56 177 215  86 135 212]
+Fenotipo Compilado: True
+Fenotipo:
+def f(x):
+  return -7.4e-3*np.exp(-6.0e-3*(3.5e-8 - x)**2)
+Valor de fitness: 2.4413961210027484
+Número de codones usados: 15
+Probabilidad lineal de cruze: None:
+Probabilidad acumulada para cruze: None:","Individuo ID: 309
+Genotipo: [ 78 209 195 144 243 133 125  90 127  34 101 255 153 118 187 255 178  28
+  30  82  88  25  16  29   2  79 144  18  80  85 219  75 208  20 241 227
+ 127  18 210 169 231 121 231  41 241 151 208  74 118  79 235 100 100  47
+ 189  67 207 171 169  65  18  53 210  67  54 113 128  96  39 152 151 157
+ 176   0 220 139 168 219 165  87 160 105 195 226 244  24 230 249 197 178
+  31  99]
+Fenotipo Compilado: True
+Fenotipo:
+def f(x):
+  return -7.4e-3*np.exp(-9.0e-4*(3.5e-8 - x)**2)
+Valor de fitness: 2.4413726612130335
+Número de codones usados: 15
+Probabilidad lineal de cruze: None:
+Probabilidad acumulada para cruze: None:","Individuo ID: 309
+Genotipo: [ 78 209 195 144 243 133 125  90 127  34 101 255 153 118 187 255 178  28
+  30  82  88  25  16  29   2  79 144  18  80  85 219  75 208  20 241 227
+ 127  18 210 169 231 121 231  41 241 151 208  74 118  79 235 100 100  47
+ 189  67 207 171 169  65  18  53 210  67  54 113 128  96  39 152 151 157
+ 176   0 220 139 168 219 165  87 160 105 195 226 244  24 230 249 197 178
+  31  99]
+Fenotipo Compilado: True
+Fenotipo:
+def f(x):
+  return -7.4e-3*np.exp(-9.0e-4*(3.5e-8 - x)**2)
+Valor de fitness: 2.4413726612130335
+Número de codones usados: 15
+Probabilidad lineal de cruze: None:
+Probabilidad acumulada para cruze: None:","Individuo ID: 407
+Genotipo: [ 52 174  22 195  97 222  74 105 217 120 135 157 215 148  98 174  18  73
+ 138  55 233 213 156 196 153  83  66 204 244  52  23 183  43  89  59   4
+ 179  76 223  70 187  94 158  11 216  43   9 150 256 103 145  85  50 198
+  29  10 153 119  66 108 122  77   2]
+Fenotipo Compilado: True
+Fenotipo:
+def f(x):
+  return +5.5e-2*np.tanh(3.5e-0*x + 1.7e-8)
+Valor de fitness: 2.352085368319849
+Número de codones usados: 15
+Probabilidad lineal de cruze: None:
+Probabilidad acumulada para cruze: None:","Individuo ID: 456
+Genotipo: [ 52  62  22 195  97 222  74 105 217 120 135  43 175 148  98 174  22  73
+ 138  55 233 213 156 196 153  83 116 204 244  52  23 183 187  89  59 184
+ 179  13 223  70 246  94 158  11 216  43   9 150 256 103 145  85  50 198
+  29  54 153 119   1 108  18  35 210  67 231  77 128   5  39  21 234 146
+ 153  64  99 139 168  34 231 196 249  95 195  29 216  24  23 158 109  29
+  26 186 165]
+Fenotipo Compilado: True
+Fenotipo:
+def f(x):
+  return +5.5e-2*np.tanh(3.5e-0*x + 1.3e-8)
+Valor de fitness: 2.352085368277508
+Número de codones usados: 15
+Probabilidad lineal de cruze: None:
+Probabilidad acumulada para cruze: None:"
+1,"Individuo ID: 505
+Genotipo: [1, 144, 221, 165, 32, 0, 23, 180, 139, 0, 229, 116, 37, 0, 1, 1, 186, 251, 93, 82, 117, 174, 62, 103, 67, 159, 137, 178, 233, 28, 90, 205, 33]
+Fenotipo Compilado: True
+Fenotipo:
+def f(x):
+  return +6.5e+0*np.exp(-6.0e-0*(5.6e-0 - x)**2)+9.3e+7*np.exp(-4.2e-7*(7.7e+3 - x)**2)-7.1e+1*np.exp(-4.2e+3*(1.9e+9 - x)**2)
+Valor de fitness: 2.470472216779151
+Número de codones usados: 45
+Probabilidad lineal de cruze: 0.003999999999999999:
+Probabilidad acumulada para cruze: 0.003999999999999999:","Individuo ID: 505
+Genotipo: [1, 144, 221, 165, 32, 0, 23, 180, 139, 0, 229, 116, 37, 0, 1, 1, 186, 251, 93, 82, 117, 174, 62, 103, 67, 159, 137, 178, 233, 28, 90, 205, 33]
+Fenotipo Compilado: True
+Fenotipo:
+def f(x):
+  return +6.5e+0*np.exp(-6.0e-0*(5.6e-0 - x)**2)+9.3e+7*np.exp(-4.2e-7*(7.7e+3 - x)**2)-7.1e+1*np.exp(-4.2e+3*(1.9e+9 - x)**2)
+Valor de fitness: 2.470472216779151
+Número de codones usados: 45
+Probabilidad lineal de cruze: 0.003999999999999999:
+Probabilidad acumulada para cruze: 0.003999999999999999:","Individuo ID: 627
+Genotipo: [  1  77  64 235  43   0 240 197  36   0  88 171 254   0   1   1 186 251
+  93  82 117 174  62 103  67 159 137 178 233 118  90 205  33]
+Fenotipo Compilado: True
+Fenotipo:
+def f(x):
+  return -2.5e-0*np.exp(-7.7e+0*(8.1e+0 - x)**2)+9.3e+7*np.exp(-4.2e-7*(7.7e+3 - x)**2)-7.1e-4*np.exp(-2.3e+0*(9.6e+8 - x)**2)
+Valor de fitness: 2.470472216779151
+Número de codones usados: 45
+Probabilidad lineal de cruze: None:
+Probabilidad acumulada para cruze: None:","Individuo ID: 694
+Genotipo: [156 237 153   1 127  41  45  55   8  25  37 202 121 240 236 246   1 142
+  88 183  46 146 147  84 132  88  70 158 174 114 185  41 141  52 235  58
+ 200 234 213 179 244  49 122  58  74  46  61   3  91  58 129  83 170  34
+ 254 172  52 241 184  39 163 218 173 125 162 149 165 220  96  74 202 207
+ 195  31 206 241  71 196 101 226 217 236 172 108  87 201 111  82 221 133
+ 170  92   6   5 153  37 139  96  55  82 203  19 125  77 214  68  40 163
+ 180]
+Fenotipo Compilado: True
+Fenotipo:
+def f(x):
+  return -1.1e-1*np.exp(-1.5e+5*(2.2e-0 - x)**2)
+Valor de fitness: 2.4423839508580714
+Número de codones usados: 15
+Probabilidad lineal de cruze: None:
+Probabilidad acumulada para cruze: None:","Individuo ID: 694
+Genotipo: [156 237 153   1 127  41  45  55   8  25  37 202 121 240 236 246   1 142
+  88 183  46 146 147  84 132  88  70 158 174 114 185  41 141  52 235  58
+ 200 234 213 179 244  49 122  58  74  46  61   3  91  58 129  83 170  34
+ 254 172  52 241 184  39 163 218 173 125 162 149 165 220  96  74 202 207
+ 195  31 206 241  71 196 101 226 217 236 172 108  87 201 111  82 221 133
+ 170  92   6   5 153  37 139  96  55  82 203  19 125  77 214  68  40 163
+ 180]
+Fenotipo Compilado: True
+Fenotipo:
+def f(x):
+  return -1.1e-1*np.exp(-1.5e+5*(2.2e-0 - x)**2)
+Valor de fitness: 2.4423839508580714
+Número de codones usados: 15
+Probabilidad lineal de cruze: None:
+Probabilidad acumulada para cruze: None:","Individuo ID: 798
+Genotipo: [156 141 158   1  27 172  45  60   8 111  37 204  31 240 222   3 101  88
+  32 225  63  91 155 151   0 182 223 150 192   1   5  90 227 241 119   0
+  85 221   5   0 176 143 148   0   1 250 137 168 241 256  12 106 157 235
+ 110  41 116  35 246 148  47  28  36 121 231  70  47  42  95 152  40 100
+ 241 126 224 161  70 231 183 249 248 161 220   0 192 200  16  85 208 176
+  30  81 118   4  88  63 181  97 195 219 148  61 248 113 164  86 188  21
+  18 105  79  89  94 102 141  49   4 172  35 246  90]
+Fenotipo Compilado: True
+Fenotipo:
+def f(x):
+  return -6.1e-2*np.exp(-1.0e+1*(2.4e-0 - x)**2)
+Valor de fitness: 2.3627927828412
+Número de codones usados: 15
+Probabilidad lineal de cruze: None:
+Probabilidad acumulada para cruze: None:","Individuo ID: 798
+Genotipo: [156 141 158   1  27 172  45  60   8 111  37 204  31 240 222   3 101  88
+  32 225  63  91 155 151   0 182 223 150 192   1   5  90 227 241 119   0
+  85 221   5   0 176 143 148   0   1 250 137 168 241 256  12 106 157 235
+ 110  41 116  35 246 148  47  28  36 121 231  70  47  42  95 152  40 100
+ 241 126 224 161  70 231 183 249 248 161 220   0 192 200  16  85 208 176
+  30  81 118   4  88  63 181  97 195 219 148  61 248 113 164  86 188  21
+  18 105  79  89  94 102 141  49   4 172  35 246  90]
+Fenotipo Compilado: True
+Fenotipo:
+def f(x):
+  return -6.1e-2*np.exp(-1.0e+1*(2.4e-0 - x)**2)
+Valor de fitness: 2.3627927828412
+Número de codones usados: 15
+Probabilidad lineal de cruze: None:
+Probabilidad acumulada para cruze: None:","Individuo ID: 872
+Genotipo: [156 141 158 123  27 172  45  60   8 111  37 204  31 240 222   3 101  88
+  32 225  63  91  61 151  55 182 223 150 192   1   5  90 227 241 119   0
+  85 221  50   0 176 143 148   0   1 250 137 168 241 256  12 106 157 235
+ 110  41 116  35 246 148  47  28  36 121 231  70  47  42  95 152  40 215
+  37 152 122 161  70 231 183 249 248 179 220   0 192 200  16  11 208 176
+  30  81 118   4  88  63 181  77 195 160 148  61 248 113 251  86 188  21
+  18 105  79  89  94 102 141  49   4 172  35 246  90]
+Fenotipo Compilado: True
+Fenotipo:
+def f(x):
+  return -6.3e-2*np.exp(-1.0e+1*(2.4e-0 - x)**2)
+Valor de fitness: 2.362527573825217
+Número de codones usados: 15
+Probabilidad lineal de cruze: None:
+Probabilidad acumulada para cruze: None:","Individuo ID: 917
+Genotipo: [156 141 158 123  27 172  45  60   8 111  37 204  31 240 222   3 101  88
+  32 225  63  91  61 151  55  58 223 150 192   1   5  90 132 241 119   0
+  85 221  50 180 176 143 148   0   1 250 169  54 197 256 238 206  96 213
+ 110  27 116 119 246  66  47  28  36 227 200 128   3  42  95  56  65 100
+ 241 201 224  19 237  32 159 156 202  38 141  11 245  14  31  35 117 197
+   5 103 116 168 136 121  30 146 159   0  49 234 161   0   1   0 128 104
+  32 110  29 208 195  36 186  97 256  13 187 141  39 132  37]
+Fenotipo Compilado: True
+Fenotipo:
+def f(x):
+  return -6.3e-2*np.exp(-1.0e+1*(2.4e-0 - x)**2)
+Valor de fitness: 2.362527573825217
+Número de codones usados: 15
+Probabilidad lineal de cruze: None:
+Probabilidad acumulada para cruze: None:","Individuo ID: 990
+Genotipo: [156 141 158 123  27 172  45  60   8 111  37 204  31 240 222   3 101 177
+  32 225  63  91  89 150  55 244 223  51 192   1   5  90 132 241 119   0
+  16 221  34 180 176 143 148   0   1 250 169  54 197 256 238 206  96 213
+ 174  27 116 119 246  66  47  28  36 251 200 128   3  42  95  56  65 100
+ 241 195 224 161 103 219 183 249  47 230 178 123 188 239 129  62 208 176
+  30  33 150 137  76  63 181  97   5  66  26   2 237 113 243  86  94 234
+  18  11 175 211 176  38 141  96   4 172  35  16  90]
+Fenotipo Compilado: True
+Fenotipo:
+def f(x):
+  return -6.3e-2*np.exp(-1.0e+1*(2.4e-0 - x)**2)
+Valor de fitness: 2.362527573825217
+Número de codones usados: 15
+Probabilidad lineal de cruze: None:
+Probabilidad acumulada para cruze: None:"
